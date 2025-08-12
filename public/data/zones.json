@@ -1,0 +1,51 @@
+{
+  "zones": [
+    {
+      "id": "zone-1",
+      "name": "부평 문화의 거리",
+      "description": "부평의 문화와 예술이 살아 숨쉬는 거리",
+      "image": "/images/zones/culture-street.jpg",
+      "spots": ["spot-1", "spot-2", "spot-3"]
+    },
+    {
+      "id": "zone-2",
+      "name": "부평 지하상가",
+      "description": "다양한 쇼핑과 먹거리가 있는 지하상가",
+      "image": "/images/zones/underground.jpg",
+      "spots": ["spot-4", "spot-5", "spot-6"]
+    },
+    {
+      "id": "zone-3",
+      "name": "부평 역사거리",
+      "description": "부평의 역사와 전통을 만나는 거리",
+      "image": "/images/zones/history-street.jpg",
+      "spots": ["spot-7", "spot-8", "spot-9"]
+    }
+  ],
+  "spots": [
+    {
+      "id": "spot-1",
+      "zoneId": "zone-1",
+      "name": "부평아트센터",
+      "description": "다양한 공연과 전시가 열리는 복합문화공간",
+      "coordinates": {
+        "latitude": 37.5074,
+        "longitude": 126.7216
+      },
+      "address": "인천광역시 부평구 아트센터로 166",
+      "qrCode": "BRC-SPOT-001"
+    },
+    {
+      "id": "spot-2",
+      "zoneId": "zone-1",
+      "name": "부평 문화의 거리 조형물",
+      "description": "부평의 상징적인 조형물",
+      "coordinates": {
+        "latitude": 37.5084,
+        "longitude": 126.7226
+      },
+      "address": "인천광역시 부평구 부평문화로",
+      "qrCode": "BRC-SPOT-002"
+    }
+  ]
+}
