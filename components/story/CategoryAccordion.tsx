@@ -1,13 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+
+interface SubItem {
+  title: string;
+  href: string;
+}
 
 interface CategoryItem {
   id: string;
   zone: string;
   color: string;
   title: string;
-  subItems?: string[];
+  subItems?: SubItem[];
 }
 
 const categories: CategoryItem[] = [
@@ -16,28 +22,44 @@ const categories: CategoryItem[] = [
     zone: "A",
     color: "#FF9A00",
     title: "거리의 탄생",
-    subItems: ["문화의 거리와 역사", "부평 캐릭터 소개", "상점 안내지도"]
+    subItems: [
+      { title: "문화의 거리와 역사", href: "/story/culture-history" },
+      { title: "부평 캐릭터 소개", href: "/story/character-intro" },
+      { title: "상점 안내지도", href: "/story/store-map" }
+    ]
   },
   {
     id: "b",
     zone: "B",
     color: "#16CB73",
     title: "부평의 인물",
-    subItems: ["역사적 인물", "현대 인물", "문화예술인"]
+    subItems: [
+      { title: "역사적 인물", href: "/story/historical-figures" },
+      { title: "현대 인물", href: "/story/modern-figures" },
+      { title: "문화예술인", href: "/story/artists" }
+    ]
   },
   {
     id: "c",
     zone: "C",
     color: "#16CB73",
     title: "행사와 축제",
-    subItems: ["연례 행사", "계절별 축제", "문화 이벤트"]
+    subItems: [
+      { title: "연례 행사", href: "/story/annual-events" },
+      { title: "계절별 축제", href: "/story/seasonal-festivals" },
+      { title: "문화 이벤트", href: "/story/cultural-events" }
+    ]
   },
   {
     id: "d",
     zone: "D",
     color: "#16CB73",
     title: "부평의 역사",
-    subItems: ["조선시대", "일제강점기", "현대사"]
+    subItems: [
+      { title: "조선시대", href: "/story/joseon-era" },
+      { title: "일제강점기", href: "/story/japanese-occupation" },
+      { title: "현대사", href: "/story/modern-history" }
+    ]
   }
 ];
 
@@ -96,15 +118,16 @@ export default function CategoryAccordion() {
             <div className="bg-white/90 backdrop-blur-sm rounded-b-xl border-x-[2.67px] border-b-[2.67px] border-white shadow-lg overflow-hidden animate-slideDown">
               <div className="p-6 space-y-3">
                 {category.subItems?.map((item, idx) => (
-                  <div
+                  <Link
                     key={idx}
-                    className="text-[20px] text-gray-700 py-2 hover:text-black cursor-pointer transition-colors"
+                    href={item.href}
+                    className="block text-[20px] text-gray-700 py-2 hover:text-black cursor-pointer transition-colors"
                     style={{
                       animation: `fadeIn ${0.3 + idx * 0.1}s ease-out`
                     }}
                   >
-                    {idx + 1}. {item}
-                  </div>
+                    {idx + 1}. {item.title}
+                  </Link>
                 ))}
               </div>
             </div>
