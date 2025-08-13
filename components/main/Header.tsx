@@ -13,7 +13,6 @@ export default function Header({ logoSrc, isLoaded }: HeaderProps) {
         }`}
       >
         <div className="w-[67px] h-[67px] backdrop-blur-sm bg-white/70 rounded-xl border-[1.6px] border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform cursor-pointer">
-          <span className="text-xs font-bold">QR</span>
         </div>
       </div>
 
