@@ -2,9 +2,22 @@
 
 import { useEffect, useRef } from "react";
 
+interface KakaoMaps {
+  LatLng: new (lat: number, lng: number) => unknown;
+  Map: new (container: HTMLElement, options: unknown) => unknown;
+  Marker: new (options: { position: unknown }) => {
+    setMap: (map: unknown) => void;
+  };
+  load: (callback: () => void) => void;
+}
+
+interface Kakao {
+  maps: KakaoMaps;
+}
+
 declare global {
   interface Window {
-    kakao: any;
+    kakao: Kakao;
   }
 }
 
@@ -20,7 +33,7 @@ export default function KakaoMap({
   level = 3 
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<any>(null);
+  const mapInstance = useRef<unknown>(null);
 
   useEffect(() => {
     const initializeMap = () => {
