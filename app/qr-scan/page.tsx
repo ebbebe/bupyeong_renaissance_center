@@ -88,7 +88,7 @@ export default function QRScanPage() {
     }
   };
 
-  const handleError = (error: Error) => {
+  const handleError = (error: unknown) => {
     console.error("QR 스캔 에러:", error);
     setError("카메라 접근 권한이 필요합니다.");
   };
