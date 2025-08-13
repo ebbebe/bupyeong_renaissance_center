@@ -207,16 +207,12 @@ export default function KakaoMapWithSearch({
 
           setSearchResults(results);
 
-          // 검색 결과가 있으면 첫 번째 결과로 지도 중심 이동
-          if (results.length > 0) {
-            const bounds = new window.kakao.maps.LatLngBounds();
-            results.forEach(location => {
-              bounds.extend(new window.kakao.maps.LatLng(
-                parseFloat(location.y),
-                parseFloat(location.x)
-              ));
-            });
-            map.setBounds(bounds);
+          // 지도 중심은 그대로 유지하고 줌 레벨만 조정
+          // 검색 결과가 많으면 약간 줌아웃
+          if (results.length > 5) {
+            map.setLevel(5);
+          } else if (results.length > 0) {
+            map.setLevel(4);
           }
         } else if (status === window.kakao.maps.services.Status.ZERO_RESULT) {
           clearMarkers();
@@ -230,25 +226,39 @@ export default function KakaoMapWithSearch({
     );
   }, [latitude, longitude, userLocation, clearMarkers, createMarker]);
 
-  // 사용자 위치 가져오기
+  // 사용자 위치 가져오기 (컴포넌트 마운트 시 한 번만)
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation({
+          const newLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
-          });
+          };
+          console.log("현재 위치 획득:", newLocation);
+          setUserLocation(newLocation);
         },
         (error) => {
           console.log("위치 정보를 가져올 수 없습니다:", error);
+          // 위치 정보를 가져올 수 없으면 부평역을 기본 위치로 사용
+          setUserLocation({
+            lat: latitude,
+            lng: longitude
+          });
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
         }
       );
     }
-  }, []);
+  }, []); // 빈 배열로 한 번만 실행
 
-  // 카카오맵 초기화
+  // 카카오맵 초기화 (한 번만 실행)
   useEffect(() => {
+    if (mapInstance.current) return; // 이미 맵이 있으면 재생성하지 않음
+    
     const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY;
     
     if (!apiKey) {
@@ -257,8 +267,10 @@ export default function KakaoMapWithSearch({
     }
     
     const existingScript = document.querySelector('script[src*="dapi.kakao.com"]');
-    if (existingScript) {
-      existingScript.remove();
+    if (existingScript && window.kakao && window.kakao.maps) {
+      // 스크립트가 이미 로드되어 있으면 바로 맵 생성
+      initializeMap();
+      return;
     }
     
     const script = document.createElement("script");
@@ -266,55 +278,18 @@ export default function KakaoMapWithSearch({
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services,clusterer,drawing&autoload=false`;
     script.async = true;
 
-    script.onload = () => {
-      if (!window.kakao || !window.kakao.maps) {
-        setError("카카오맵 객체를 찾을 수 없습니다.");
-        return;
-      }
-
+    const initializeMap = () => {
       window.kakao.maps.load(() => {
-        if (!mapContainer.current) return;
+        if (!mapContainer.current || mapInstance.current) return;
 
         try {
           const options = {
-            center: new window.kakao.maps.LatLng(
-              userLocation?.lat || latitude,
-              userLocation?.lng || longitude
-            ),
+            center: new window.kakao.maps.LatLng(latitude, longitude), // 일단 부평역으로 초기화
             level: level,
           };
 
           const map = new window.kakao.maps.Map(mapContainer.current, options);
           mapInstance.current = map;
-
-          // 현재 위치 마커 (사용자 위치가 있을 경우)
-          if (userLocation) {
-            const userMarker = new window.kakao.maps.Marker({
-              position: new window.kakao.maps.LatLng(userLocation.lat, userLocation.lng),
-              map: map,
-              title: "현재 위치"
-            });
-
-            // 현재 위치를 표시하는 원
-            const circle = new window.kakao.maps.Circle({
-              center: new window.kakao.maps.LatLng(userLocation.lat, userLocation.lng),
-              radius: 50,
-              strokeWeight: 2,
-              strokeColor: '#3B82F6',
-              strokeOpacity: 0.8,
-              strokeStyle: 'solid',
-              fillColor: '#3B82F6',
-              fillOpacity: 0.3
-            });
-            circle.setMap(map);
-          }
-
-          // 지도 컨트롤 추가
-          const mapTypeControl = new window.kakao.maps.MapTypeControl();
-          map.addControl(mapTypeControl, window.kakao.maps.ControlPosition.TOPRIGHT);
-
-          const zoomControl = new window.kakao.maps.ZoomControl();
-          map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
 
           setMapLoaded(true);
         } catch (err) {
@@ -324,27 +299,54 @@ export default function KakaoMapWithSearch({
       });
     };
 
+    script.onload = initializeMap;
     script.onerror = () => {
       setError("카카오맵을 불러올 수 없습니다. API 키와 도메인 등록을 확인하세요.");
     };
 
     document.head.appendChild(script);
+  }, []); // 빈 배열로 한 번만 실행
 
-    return () => {
-      clearMarkers();
-      const existingScript = document.querySelector(
-        `script[src*="dapi.kakao.com"]`
-      );
-      if (existingScript) {
-        existingScript.remove();
-      }
-    };
-  }, [latitude, longitude, level, userLocation, clearMarkers]);
+  // 사용자 위치가 업데이트되면 지도 중심 이동
+  useEffect(() => {
+    if (mapInstance.current && userLocation) {
+      const position = new window.kakao.maps.LatLng(userLocation.lat, userLocation.lng);
+      mapInstance.current.setCenter(position);
+      
+      // 현재 위치 마커 추가
+      const userMarker = new window.kakao.maps.Marker({
+        position: position,
+        map: mapInstance.current,
+        title: "현재 위치"
+      });
+
+      // 현재 위치를 표시하는 원
+      const circle = new window.kakao.maps.Circle({
+        center: position,
+        radius: 50,
+        strokeWeight: 2,
+        strokeColor: '#3B82F6',
+        strokeOpacity: 0.8,
+        strokeStyle: 'solid',
+        fillColor: '#3B82F6',
+        fillOpacity: 0.3,
+        map: mapInstance.current
+      });
+    }
+  }, [userLocation]);
 
   // 카테고리 선택 시 검색 실행
   useEffect(() => {
     if (mapLoaded && mapInstance.current && selectedCategory) {
+      // 현재 지도 중심 저장
+      const currentCenter = mapInstance.current.getCenter();
       searchPlaces(mapInstance.current, selectedCategory);
+      // 검색 후 지도 중심 복원
+      setTimeout(() => {
+        if (mapInstance.current) {
+          mapInstance.current.setCenter(currentCenter);
+        }
+      }, 100);
     } else if (mapLoaded && mapInstance.current && !selectedCategory) {
       clearMarkers();
       setSearchResults([]);

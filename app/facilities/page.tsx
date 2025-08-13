@@ -90,7 +90,7 @@ export default function FacilitiesPage() {
       }`}>
         <button
           onClick={() => router.push('/main')}
-          className="w-10 h-10 rounded-xl bg-white/70 backdrop-blur-md border-[1.6px] border-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
+          className="w-10 h-10 rounded-xl bg-white backdrop-blur-md border-2 border-gray-300 shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
         >
           <svg width="14" height="24" viewBox="0 0 14 24" fill="none">
             <path d="M12 2L2 12L12 22" stroke="#000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -107,10 +107,10 @@ export default function FacilitiesPage() {
             <button
               key={category.id}
               onClick={() => handleCategoryClick(category.id)}
-              className={`relative w-[88px] h-[88px] rounded-xl backdrop-blur-md border-[1.6px] border-white shadow-lg transition-all duration-300 hover:scale-105 ${
+              className={`relative w-[88px] h-[88px] rounded-xl backdrop-blur-md border-2 shadow-lg transition-all duration-300 hover:scale-105 ${
                 selectedCategory === category.id 
-                  ? 'bg-blue-500/80' 
-                  : 'bg-white/70'
+                  ? 'bg-blue-500 border-blue-600' 
+                  : 'bg-white border-gray-300'
               }`}
               style={{ 
                 transitionDelay: `${index * 100}ms`,
