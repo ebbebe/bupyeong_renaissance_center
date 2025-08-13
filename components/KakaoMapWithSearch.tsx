@@ -266,18 +266,7 @@ export default function KakaoMapWithSearch({
       return;
     }
     
-    const existingScript = document.querySelector('script[src*="dapi.kakao.com"]');
-    if (existingScript && window.kakao && window.kakao.maps) {
-      // 스크립트가 이미 로드되어 있으면 바로 맵 생성
-      initializeMap();
-      return;
-    }
-    
-    const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services,clusterer,drawing&autoload=false`;
-    script.async = true;
-
+    // initializeMap 함수를 먼저 정의
     const initializeMap = () => {
       window.kakao.maps.load(() => {
         if (!mapContainer.current || mapInstance.current) return;
@@ -298,6 +287,18 @@ export default function KakaoMapWithSearch({
         }
       });
     };
+    
+    const existingScript = document.querySelector('script[src*="dapi.kakao.com"]');
+    if (existingScript && window.kakao && window.kakao.maps) {
+      // 스크립트가 이미 로드되어 있으면 바로 맵 생성
+      initializeMap();
+      return;
+    }
+    
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services,clusterer,drawing&autoload=false`;
+    script.async = true;
 
     script.onload = initializeMap;
     script.onerror = () => {
