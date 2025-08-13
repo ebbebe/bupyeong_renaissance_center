@@ -28,7 +28,7 @@ export default function QRScanPage() {
     setTimeout(() => setIsLoaded(true), 100);
   }, []);
 
-  const handleScan = (detectedCodes: any[]) => {
+  const handleScan = (detectedCodes: Array<{ rawValue: string }>) => {
     if (detectedCodes && detectedCodes.length > 0 && isScanning) {
       const result = detectedCodes[0].rawValue;
       console.log("QR 코드 스캔됨:", result);
