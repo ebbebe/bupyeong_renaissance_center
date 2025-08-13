@@ -36,25 +36,33 @@ const CATEGORY_CONFIG = {
     keyword: "화장실",
     markerImage: "/images/marker_toilet.svg",
     fallbackColor: "#4B5563", // gray-600
-    zIndex: 1
+    zIndex: 1,
+    useCategory: false,
+    categoryCode: null
   },
   parking: {
-    keyword: "공영주차장",
+    keyword: "주차장",  // "공영주차장" → "주차장"으로 변경 (더 많은 결과)
     markerImage: "/images/marker_parking.svg", 
     fallbackColor: "#3B82F6", // blue-500
-    zIndex: 2
+    zIndex: 2,
+    useCategory: true,
+    categoryCode: "PK6"  // 주차장 카테고리 코드
   },
   bus: {
-    keyword: "버스정류장",
+    keyword: "버스",  // 버스 키워드로 먼저 시도
     markerImage: "/images/marker_bus.svg",
     fallbackColor: "#10B981", // green-500
-    zIndex: 3
+    zIndex: 3,
+    useCategory: false,
+    categoryCode: null  // 버스는 카테고리 코드가 없음
   },
   subway: {
     keyword: "지하철역",
     markerImage: "/images/marker_subway.svg",
     fallbackColor: "#8B5CF6", // purple-500
-    zIndex: 4
+    zIndex: 4,
+    useCategory: true,
+    categoryCode: "SW8"  // 지하철역 카테고리 코드
   }
 };
 
@@ -179,10 +187,8 @@ export default function KakaoMapWithSearch({
       sort: window.kakao.maps.services.SortBy.DISTANCE
     };
 
-    // 키워드로 검색
-    ps.keywordSearch(
-      config.keyword,
-      (data: any, status: any) => {
+    // 검색 콜백 함수
+    const searchCallback = (data: any, status: any) => {
         if (status === window.kakao.maps.services.Status.OK) {
           clearMarkers();
           const results: Location[] = [];
@@ -217,41 +223,61 @@ export default function KakaoMapWithSearch({
         } else if (status === window.kakao.maps.services.Status.ZERO_RESULT) {
           clearMarkers();
           setSearchResults([]);
+          console.log(`${config.keyword} 검색 결과가 없습니다.`);
+          // 버스의 경우 다른 키워드로 재시도
+          if (category === 'bus') {
+            console.log("'정류장' 키워드로 재검색 시도...");
+            ps.keywordSearch("정류장", searchCallback, searchOptions);
+            return;
+          }
           alert('검색 결과가 없습니다.');
         } else {
           console.error('검색 중 오류가 발생했습니다.');
         }
-      },
-      searchOptions
-    );
+      };
+
+    // 카테고리 코드가 있으면 카테고리 검색, 없으면 키워드 검색
+    if (config.useCategory && config.categoryCode) {
+      console.log(`카테고리 검색: ${config.categoryCode}`);
+      ps.categorySearch(config.categoryCode, searchCallback, searchOptions);
+    } else {
+      console.log(`키워드 검색: ${config.keyword}`);
+      ps.keywordSearch(config.keyword, searchCallback, searchOptions);
+    }
   }, [latitude, longitude, userLocation, clearMarkers, createMarker]);
 
   // 사용자 위치 가져오기 (컴포넌트 마운트 시 한 번만)
   useEffect(() => {
+    console.log("위치 정보 요청 시작...");
     if (navigator.geolocation) {
+      // 먼저 캐시된 위치가 있으면 빠르게 사용
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const newLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
-          console.log("현재 위치 획득:", newLocation);
+          console.log("현재 위치 획득 성공:", newLocation);
+          console.log("정확도:", position.coords.accuracy, "m");
           setUserLocation(newLocation);
         },
         (error) => {
-          console.log("위치 정보를 가져올 수 없습니다:", error);
+          console.error("위치 정보 에러:", error.code, error.message);
           // 위치 정보를 가져올 수 없으면 부평역을 기본 위치로 사용
+          alert("위치 정보를 가져올 수 없습니다. 부평역을 기준으로 표시합니다.");
           setUserLocation({
             lat: latitude,
             lng: longitude
           });
         },
         {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0
+          enableHighAccuracy: false, // 빠른 응답을 위해 false로 변경
+          timeout: 10000, // 10초로 증가
+          maximumAge: 30000 // 30초 캐시 허용
         }
       );
+    } else {
+      console.log("Geolocation API를 지원하지 않는 브라우저입니다.");
     }
   }, []); // 빈 배열로 한 번만 실행
 
@@ -279,6 +305,12 @@ export default function KakaoMapWithSearch({
 
           const map = new window.kakao.maps.Map(mapContainer.current, options);
           mapInstance.current = map;
+
+          // 지도 스타일 설정 - 기본 로드맵 사용
+          map.setMapTypeId(window.kakao.maps.MapTypeId.ROADMAP);
+          
+          // 카카오맵은 커스텀 스타일을 지원하지 않아 CSS 필터 제거
+          // Figma의 심플한 디자인은 별도 맵 서비스(Mapbox, Google Maps) 사용 필요
 
           setMapLoaded(true);
         } catch (err) {
@@ -311,28 +343,41 @@ export default function KakaoMapWithSearch({
   // 사용자 위치가 업데이트되면 지도 중심 이동
   useEffect(() => {
     if (mapInstance.current && userLocation) {
+      console.log("지도 중심 이동:", userLocation);
       const position = new window.kakao.maps.LatLng(userLocation.lat, userLocation.lng);
-      mapInstance.current.setCenter(position);
       
+      // 지도 중심과 레벨 동시 설정
+      mapInstance.current.setCenter(position);
+      mapInstance.current.setLevel(4);
+      
+      // 기존 현재 위치 마커 제거 (있다면)
       // 현재 위치 마커 추가
       const userMarker = new window.kakao.maps.Marker({
         position: position,
         map: mapInstance.current,
-        title: "현재 위치"
+        title: "현재 위치",
+        zIndex: 999
       });
 
       // 현재 위치를 표시하는 원
       const circle = new window.kakao.maps.Circle({
         center: position,
-        radius: 50,
+        radius: 100,
         strokeWeight: 2,
         strokeColor: '#3B82F6',
         strokeOpacity: 0.8,
         strokeStyle: 'solid',
         fillColor: '#3B82F6',
-        fillOpacity: 0.3,
+        fillOpacity: 0.2,
         map: mapInstance.current
       });
+      
+      // 부드럽게 이동
+      setTimeout(() => {
+        if (mapInstance.current) {
+          mapInstance.current.panTo(position);
+        }
+      }, 500);
     }
   }, [userLocation]);
 

@@ -1,0 +1,23 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Subway train body -->
+  <rect x="20" y="25" width="60" height="45" rx="8" fill="#3B82F6"/>
+  
+  <!-- Windows -->
+  <rect x="28" y="32" width="20" height="12" rx="2" fill="#DBEAFE"/>
+  <rect x="52" y="32" width="20" height="12" rx="2" fill="#DBEAFE"/>
+  
+  <!-- Door line -->
+  <line x1="50" y1="48" x2="50" y2="70" stroke="#1E40AF" stroke-width="2"/>
+  
+  <!-- Wheels -->
+  <circle cx="32" cy="75" r="4" fill="#1F2937"/>
+  <circle cx="68" cy="75" r="4" fill="#1F2937"/>
+  
+  <!-- Rail track -->
+  <rect x="15" y="82" width="70" height="2" fill="#6B7280"/>
+  <rect x="10" y="86" width="80" height="2" fill="#6B7280"/>
+  
+  <!-- Front lights -->
+  <circle cx="30" cy="58" r="3" fill="#FEF3C7"/>
+  <circle cx="70" cy="58" r="3" fill="#FEF3C7"/>
+</svg>

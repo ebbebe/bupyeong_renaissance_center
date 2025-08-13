@@ -37,7 +37,7 @@ const categories = [
   {
     id: "subway",
     name: "지하철",
-    icon: "/images/subway_icon.png",
+    icon: "/images/subway_icon_final.svg",
     description: "지하철역"
   }
 ];
@@ -84,22 +84,20 @@ export default function FacilitiesPage() {
 
       {/* 마커는 카카오맵에서 직접 표시하도록 수정 예정 */}
 
-      {/* Back Button */}
-      <div className={`absolute left-6 top-12 z-[1000] transition-all duration-700 ${
+      {/* Back Button - Figma 디자인 적용 */}
+      <div className={`absolute left-[30px] top-[53px] z-[1000] transition-all duration-700 ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
       }`}>
         <button
           onClick={() => router.push('/main')}
-          className="w-10 h-10 rounded-xl bg-white backdrop-blur-md border-2 border-gray-300 shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
+          className="w-10 h-10 bg-white/90 rounded-xl shadow-md hover:shadow-lg flex items-center justify-center hover:scale-110 transition-all"
         >
-          <svg width="14" height="24" viewBox="0 0 14 24" fill="none">
-            <path d="M12 2L2 12L12 22" stroke="#000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <img src="/images/back_arrow.svg" alt="뒤로가기" className="w-6 h-6" />
         </button>
       </div>
 
-      {/* Bottom Category Bar */}
-      <div className={`absolute bottom-8 left-4 right-4 z-[1000] transition-all duration-700 ${
+      {/* Bottom Category Bar - Figma 디자인 적용 */}
+      <div className={`absolute bottom-[100px] left-4 right-4 z-[1000] transition-all duration-700 ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
         <div className="flex gap-3 justify-center">
@@ -107,31 +105,21 @@ export default function FacilitiesPage() {
             <button
               key={category.id}
               onClick={() => handleCategoryClick(category.id)}
-              className={`relative w-[88px] h-[88px] rounded-xl backdrop-blur-md border-2 shadow-lg transition-all duration-300 hover:scale-105 ${
+              className={`relative w-[88.689px] h-[88.689px] rounded-xl transition-all duration-300 hover:scale-105 ${
                 selectedCategory === category.id 
-                  ? 'bg-blue-500 border-blue-600' 
-                  : 'bg-white border-gray-300'
+                  ? 'bg-white ring-2 ring-blue-500 shadow-lg' 
+                  : 'bg-white/90 shadow-md hover:shadow-lg'
               }`}
               style={{ 
                 transitionDelay: `${index * 100}ms`,
                 animationDelay: `${index * 100}ms`
               }}
             >
-              <div className="absolute inset-0 flex items-center justify-center p-3">
-                <img 
-                  src={category.icon}
-                  alt={category.name}
-                  className={`w-full h-full object-contain ${
-                    selectedCategory === category.id ? 'opacity-100' : 'opacity-80'
-                  }`}
-                />
-              </div>
-              {/* Category name tooltip */}
-              <span className={`absolute -top-8 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap bg-black/80 text-white px-2 py-1 rounded transition-opacity ${
-                selectedCategory === category.id ? 'opacity-100' : 'opacity-0'
-              }`}>
-                {category.name}
-              </span>
+              <img 
+                src={category.icon}
+                alt={category.name}
+                className="w-[60px] h-[60px] object-contain absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+              />
             </button>
           ))}
         </div>
