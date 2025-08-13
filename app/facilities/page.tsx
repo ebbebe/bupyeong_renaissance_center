@@ -105,7 +105,7 @@ export default function FacilitiesPage() {
             <button
               key={category.id}
               onClick={() => handleCategoryClick(category.id)}
-              className={`relative w-[88.689px] h-[88.689px] rounded-xl transition-all duration-300 hover:scale-105 ${
+              className={`relative aspect-square w-[22vw] max-w-[88.689px] rounded-xl transition-all duration-300 hover:scale-105 ${
                 selectedCategory === category.id 
                   ? 'bg-white ring-2 ring-blue-500 shadow-lg' 
                   : 'bg-white/90 shadow-md hover:shadow-lg'

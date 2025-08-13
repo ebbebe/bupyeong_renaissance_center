@@ -81,6 +81,7 @@ export default function KakaoMapWithSearch({
   const [error, setError] = useState<string>("");
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [searchResults, setSearchResults] = useState<Location[]>([]);
+  const [locationLoading, setLocationLoading] = useState(true);
 
   // 마커 모두 제거
   const clearMarkers = useCallback(() => {
@@ -249,8 +250,9 @@ export default function KakaoMapWithSearch({
   // 사용자 위치 가져오기 (컴포넌트 마운트 시 한 번만)
   useEffect(() => {
     console.log("위치 정보 요청 시작...");
+    setLocationLoading(true);
+    
     if (navigator.geolocation) {
-      // 먼저 캐시된 위치가 있으면 빠르게 사용
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const newLocation = {
@@ -260,30 +262,36 @@ export default function KakaoMapWithSearch({
           console.log("현재 위치 획득 성공:", newLocation);
           console.log("정확도:", position.coords.accuracy, "m");
           setUserLocation(newLocation);
+          setLocationLoading(false);
         },
         (error) => {
           console.error("위치 정보 에러:", error.code, error.message);
-          // 위치 정보를 가져올 수 없으면 부평역을 기본 위치로 사용
-          alert("위치 정보를 가져올 수 없습니다. 부평역을 기준으로 표시합니다.");
+          // 에러 시 부평역을 기본 위치로 설정
           setUserLocation({
             lat: latitude,
             lng: longitude
           });
+          setLocationLoading(false);
         },
         {
-          enableHighAccuracy: false, // 빠른 응답을 위해 false로 변경
-          timeout: 10000, // 10초로 증가
+          enableHighAccuracy: false, // 빠른 응답을 위해 false
+          timeout: 5000, // 5초 타임아웃으로 단축
           maximumAge: 30000 // 30초 캐시 허용
         }
       );
     } else {
       console.log("Geolocation API를 지원하지 않는 브라우저입니다.");
+      setUserLocation({
+        lat: latitude,
+        lng: longitude
+      });
+      setLocationLoading(false);
     }
   }, []); // 빈 배열로 한 번만 실행
 
   // 카카오맵 초기화 (한 번만 실행)
   useEffect(() => {
-    if (mapInstance.current) return; // 이미 맵이 있으면 재생성하지 않음
+    if (mapInstance.current || !userLocation) return; // 이미 맵이 있거나 위치 정보가 없으면 대기
     
     const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY;
     
@@ -299,7 +307,10 @@ export default function KakaoMapWithSearch({
 
         try {
           const options = {
-            center: new window.kakao.maps.LatLng(latitude, longitude), // 일단 부평역으로 초기화
+            center: new window.kakao.maps.LatLng(
+              userLocation?.lat || latitude, 
+              userLocation?.lng || longitude
+            ),
             level: level,
           };
 
@@ -338,7 +349,7 @@ export default function KakaoMapWithSearch({
     };
 
     document.head.appendChild(script);
-  }, []); // 빈 배열로 한 번만 실행
+  }, [userLocation]); // userLocation이 설정되면 실행
 
   // 사용자 위치가 업데이트되면 지도 중심 이동
   useEffect(() => {
@@ -406,11 +417,34 @@ export default function KakaoMapWithSearch({
         className="w-full h-full"
         style={{ minHeight: "100vh" }}
       />
-      {!mapLoaded && !error && (
-        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-          <div className="text-gray-600">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-            <p>지도를 불러오는 중...</p>
+      {(!mapLoaded || locationLoading) && !error && (
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center z-50">
+          <div className="text-center">
+            {/* 메인 로딩 애니메이션 */}
+            <div className="relative w-32 h-32 mx-auto mb-6">
+              {/* 외부 원 */}
+              <div className="absolute inset-0 border-4 border-blue-200 rounded-full animate-pulse"></div>
+              {/* 중간 원 */}
+              <div className="absolute inset-2 border-4 border-purple-200 rounded-full animate-ping"></div>
+              {/* 내부 아이콘 */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <svg className="w-12 h-12 text-blue-500 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+              </div>
+            </div>
+            
+            {/* 로딩 텍스트 */}
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {locationLoading ? "현재 위치를 찾고 있습니다" : "지도를 불러오는 중입니다"}
+              </h3>
+              <div className="flex items-center justify-center space-x-1">
+                <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+                <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+                <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+              </div>
+            </div>
           </div>
         </div>
       )}
