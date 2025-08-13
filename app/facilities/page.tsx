@@ -73,30 +73,7 @@ export default function FacilitiesPage() {
         <KakaoMap latitude={37.4907} longitude={126.7246} level={4} />
       </div>
 
-      {/* Location Markers (현재 선택된 카테고리의 마커만 표시) */}
-      {selectedCategory && (
-        <div className="absolute inset-0 pointer-events-none">
-          {categories
-            .find(cat => cat.id === selectedCategory)
-            ?.locations.map((location) => (
-              <div
-                key={location.id}
-                className={`absolute w-8 h-8 bg-red-500 rounded-full border-2 border-white shadow-lg transition-all duration-500 ${
-                  isLoaded ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
-                }`}
-                style={{
-                  top: `${(location.lat - 37.489) * 5000}px`,
-                  left: `${(location.lng - 126.722) * 5000}px`,
-                  transitionDelay: `${location.id * 100}ms`
-                }}
-              >
-                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap bg-white px-2 py-1 rounded shadow">
-                  {location.name}
-                </span>
-              </div>
-            ))}
-        </div>
-      )}
+      {/* 마커는 카카오맵에서 직접 표시하도록 수정 예정 */}
 
       {/* Back Button */}
       <div className={`absolute left-6 top-12 z-50 transition-all duration-700 ${

@@ -1,23 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-interface KakaoMaps {
-  LatLng: new (lat: number, lng: number) => unknown;
-  Map: new (container: HTMLElement, options: unknown) => unknown;
-  Marker: new (options: { position: unknown }) => {
-    setMap: (map: unknown) => void;
-  };
-  load: (callback: () => void) => void;
-}
-
-interface Kakao {
-  maps: KakaoMaps;
-}
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
   interface Window {
-    kakao: Kakao;
+    kakao: any;
   }
 }
 
@@ -33,56 +21,91 @@ export default function KakaoMap({
   level = 3 
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<unknown>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    const initializeMap = () => {
-      if (!mapContainer.current || !window.kakao || !window.kakao.maps) {
-        return;
-      }
+    const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY || "28477889edc216bfc45127f2cb90ecc0";
+    console.log("카카오맵 API 키:", apiKey ? "설정됨" : "없음");
+    
+    const script = document.createElement("script");
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false`;
+    script.async = true;
 
-      const options = {
-        center: new window.kakao.maps.LatLng(latitude, longitude),
-        level: level,
-      };
+    script.onload = () => {
+      window.kakao.maps.load(() => {
+        if (!mapContainer.current) return;
 
-      const map = new window.kakao.maps.Map(mapContainer.current, options);
-      mapInstance.current = map;
+        try {
+          const options = {
+            center: new window.kakao.maps.LatLng(latitude, longitude),
+            level: level,
+          };
 
-      // 지도 중심 마커 추가
-      const markerPosition = new window.kakao.maps.LatLng(latitude, longitude);
-      const marker = new window.kakao.maps.Marker({
-        position: markerPosition
+          const map = new window.kakao.maps.Map(mapContainer.current, options);
+
+          // 부평역 마커 추가
+          const markerPosition = new window.kakao.maps.LatLng(latitude, longitude);
+          const marker = new window.kakao.maps.Marker({
+            position: markerPosition,
+            title: "부평역"
+          });
+          marker.setMap(map);
+
+          // 지도 컨트롤 추가
+          const mapTypeControl = new window.kakao.maps.MapTypeControl();
+          map.addControl(mapTypeControl, window.kakao.maps.ControlPosition.TOPRIGHT);
+
+          const zoomControl = new window.kakao.maps.ZoomControl();
+          map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
+
+          setMapLoaded(true);
+        } catch (err) {
+          console.error("카카오맵 초기화 오류:", err);
+          setError("지도를 불러오는 중 오류가 발생했습니다.");
+        }
       });
-      marker.setMap(map);
     };
 
-    // 카카오맵 스크립트가 로드되었는지 확인
-    if (window.kakao && window.kakao.maps) {
-      initializeMap();
-    } else {
-      // 스크립트 로드를 기다림
-      const loadKakaoMap = () => {
-        window.kakao.maps.load(() => {
-          initializeMap();
-        });
-      };
+    script.onerror = () => {
+      setError("카카오맵 스크립트를 불러올 수 없습니다.");
+    };
 
-      // 스크립트가 아직 로드되지 않았다면 대기
-      const checkKakao = setInterval(() => {
-        if (window.kakao) {
-          clearInterval(checkKakao);
-          loadKakaoMap();
-        }
-      }, 100);
-    }
+    document.head.appendChild(script);
+
+    return () => {
+      const existingScript = document.querySelector(
+        `script[src*="dapi.kakao.com"]`
+      );
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
   }, [latitude, longitude, level]);
 
   return (
-    <div 
-      ref={mapContainer}
-      className="w-full h-full"
-      style={{ minHeight: "400px" }}
-    />
+    <div className="relative w-full h-full">
+      <div 
+        ref={mapContainer}
+        className="w-full h-full"
+        style={{ minHeight: "100vh" }}
+      />
+      {!mapLoaded && !error && (
+        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+          <div className="text-gray-600">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <p>지도를 불러오는 중...</p>
+          </div>
+        </div>
+      )}
+      {error && (
+        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+          <div className="text-red-600 text-center">
+            <p className="mb-2">{error}</p>
+            <p className="text-sm text-gray-600">API 키를 확인해주세요.</p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
