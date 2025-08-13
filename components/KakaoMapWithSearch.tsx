@@ -252,41 +252,47 @@ export default function KakaoMapWithSearch({
     console.log("위치 정보 요청 시작...");
     setLocationLoading(true);
     
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const newLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          console.log("현재 위치 획득 성공:", newLocation);
-          console.log("정확도:", position.coords.accuracy, "m");
-          setUserLocation(newLocation);
-          setLocationLoading(false);
-        },
-        (error) => {
-          console.error("위치 정보 에러:", error.code, error.message);
-          // 에러 시 부평역을 기본 위치로 설정
-          setUserLocation({
-            lat: latitude,
-            lng: longitude
-          });
-          setLocationLoading(false);
-        },
-        {
-          enableHighAccuracy: false, // 빠른 응답을 위해 false
-          timeout: 5000, // 5초 타임아웃으로 단축
-          maximumAge: 30000 // 30초 캐시 허용
-        }
-      );
-    } else {
-      console.log("Geolocation API를 지원하지 않는 브라우저입니다.");
-      setUserLocation({
-        lat: latitude,
-        lng: longitude
-      });
-      setLocationLoading(false);
-    }
+    const requestLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const newLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            console.log("현재 위치 획득 성공:", newLocation);
+            console.log("정확도:", position.coords.accuracy, "m");
+            setUserLocation(newLocation);
+            setLocationLoading(false);
+          },
+          (error) => {
+            console.error("위치 정보 에러:", error.code, error.message);
+            // 에러 시 재시도
+            if (error.code === 3) { // 타임아웃인 경우
+              console.log("타임아웃 발생, 재시도...");
+              setTimeout(requestLocation, 1000); // 1초 후 재시도
+            } else {
+              // 권한 거부나 위치 서비스 비활성화 시 계속 대기
+              console.log("위치 권한이 필요합니다. 브라우저 설정에서 위치 권한을 허용해주세요.");
+              // 위치 권한 재요청을 위한 안내 표시
+              setError("위치 권한이 필요합니다. 브라우저 설정에서 위치 권한을 허용한 후 새로고침해주세요.");
+              setLocationLoading(false);
+            }
+          },
+          {
+            enableHighAccuracy: true, // 정확도 높임
+            timeout: 10000, // 10초 타임아웃
+            maximumAge: 0 // 캐시 사용 안함
+          }
+        );
+      } else {
+        console.log("Geolocation API를 지원하지 않는 브라우저입니다.");
+        setError("이 브라우저는 위치 서비스를 지원하지 않습니다.");
+        setLocationLoading(false);
+      }
+    };
+    
+    requestLocation();
   }, []); // 빈 배열로 한 번만 실행
 
   // 카카오맵 초기화 (한 번만 실행)
@@ -449,10 +455,18 @@ export default function KakaoMapWithSearch({
         </div>
       )}
       {error && (
-        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-          <div className="text-red-600 text-center">
-            <p className="mb-2">{error}</p>
-            <p className="text-sm text-gray-600">API 키를 확인해주세요.</p>
+        <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center z-50">
+          <div className="text-center p-6 bg-white rounded-xl shadow-lg max-w-sm">
+            <svg className="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p className="text-lg font-semibold text-gray-800 mb-2">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              새로고침
+            </button>
           </div>
         </div>
       )}
