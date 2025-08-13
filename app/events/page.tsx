@@ -55,9 +55,9 @@ export default function EventsPage() {
 
   return (
     <div className="relative min-h-screen bg-[#fcfcfc] overflow-hidden">
-      {/* Background decoration */}
+      {/* Background decoration - positioned on the right side */}
       <div 
-        className={`absolute right-[50px] top-[140px] w-[370px] h-[260px] transition-all duration-1000 ${
+        className={`absolute right-[-20px] top-[140px] w-[280px] h-[200px] transition-all duration-1000 ${
           isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
         }`}
       >
@@ -69,7 +69,7 @@ export default function EventsPage() {
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             maskImage: `url('/images/events_mask.svg')`,
-            maskSize: '240px 260px',
+            maskSize: '180px 200px',
             maskPosition: 'center',
             maskRepeat: 'no-repeat'
           }}
