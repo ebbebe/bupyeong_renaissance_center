@@ -6,11 +6,11 @@ export default function EventsHeader() {
   const router = useRouter();
 
   return (
-    <div className="absolute left-0 right-0 top-0 z-10 bg-white/80 backdrop-blur-sm">
+    <div className="absolute left-0 right-0 top-0 z-50 bg-transparent">
       <div className="relative flex items-center justify-center h-24">
         {/* Back button */}
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/main')}
           className="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center hover:scale-110 transition-transform"
         >
           <svg width="14" height="24" viewBox="0 0 14 24" fill="none" xmlns="http://www.w3.org/2000/svg">

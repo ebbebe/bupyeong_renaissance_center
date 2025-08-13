@@ -189,7 +189,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
   return (
     <div className="relative min-h-screen bg-[#fcfcfc] overflow-hidden">
       {/* Header */}
-      <div className={`absolute left-0 right-0 top-0 z-10 bg-transparent transition-all duration-700 ${
+      <div className={`absolute left-0 right-0 top-0 z-50 bg-transparent transition-all duration-700 ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
       }`}>
         <div className="relative flex items-center justify-center h-24">

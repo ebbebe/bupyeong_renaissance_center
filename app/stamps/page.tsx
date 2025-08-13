@@ -47,12 +47,12 @@ export default function StampsPage() {
       </div>
 
       {/* Header */}
-      <div className={`absolute left-0 right-0 top-0 z-10 bg-transparent transition-all duration-700 ${
+      <div className={`absolute left-0 right-0 top-0 z-50 bg-transparent transition-all duration-700 ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
       }`}>
         <div className="relative flex items-center justify-center h-24">
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push('/main')}
             className="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center hover:scale-110 transition-transform"
           >
             <svg width="14" height="24" viewBox="0 0 14 24" fill="none">
