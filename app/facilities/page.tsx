@@ -42,12 +42,19 @@ const categories = [
   }
 ];
 
+interface LocationInfo {
+  place_name: string;
+  address_name: string;
+  road_address_name?: string;
+  phone?: string;
+  distance?: string;
+}
+
 export default function FacilitiesPage() {
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<any>(null);
-  const [searchResultCount, setSearchResultCount] = useState<number>(0);
+  const [selectedLocation, setSelectedLocation] = useState<LocationInfo | null>(null);
 
   useEffect(() => {
     setTimeout(() => setIsLoaded(true), 100);
@@ -58,7 +65,7 @@ export default function FacilitiesPage() {
     setSelectedLocation(null);
   };
 
-  const handleLocationSelect = (location: any) => {
+  const handleLocationSelect = (location: LocationInfo) => {
     setSelectedLocation(location);
   };
 
