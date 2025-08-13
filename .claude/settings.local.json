@@ -10,7 +10,8 @@
       "Bash(__NEW_LINE__ echo \"Images downloaded\")",
       "Bash(__NEW_LINE__ echo \"Event images downloaded\")",
       "Bash(curl:*)",
-      "Bash(__NEW_LINE__ echo \"Stamp images downloaded\")"
+      "Bash(__NEW_LINE__ echo \"Stamp images downloaded\")",
+      "WebFetch(domain:www.figma.com)"
     ],
     "deny": [],
     "ask": []

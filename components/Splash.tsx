@@ -17,7 +17,7 @@ export default function Splash() {
       setTimeout(() => {
         router.push("/main");
       }, 500); // Wait for fade out animation
-    }, 2000);
+    }, 200000);
 
     return () => clearTimeout(timer);
   }, [router]);
@@ -42,7 +42,7 @@ export default function Splash() {
 
       {/* Character on bottom right - green tree with slide animation */}
       <div 
-        className={`absolute bottom-[-200px] right-[-250px] w-[538px] h-[631px] transition-all duration-1000 ${
+        className={`absolute bottom-[-200px] right-[-210px] w-[538px] h-[631px] transition-all duration-1000 ${
           isExiting ? 'translate-x-[100px] opacity-0' : 'translate-x-0 opacity-100'
         }`}
       >
