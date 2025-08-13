@@ -135,10 +135,7 @@ export default function QRScanPage() {
             <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-white rounded-bl-2xl" />
             <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-white rounded-br-2xl" />
             
-            {/* Scanning line animation */}
-            {isScanning && (
-              <div className="absolute top-2 left-2 right-2 h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scan" />
-            )}
+            {/* Scanning line animation - 제거됨 */}
           </div>
 
           {/* Instructions */}
@@ -197,16 +194,6 @@ export default function QRScanPage() {
         </button>
       </div>
 
-      {/* Scan Animation CSS */}
-      <style jsx>{`
-        @keyframes scan {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(240px); }
-        }
-        .animate-scan {
-          animation: scan 2s linear infinite;
-        }
-      `}</style>
     </div>
   );
 }
