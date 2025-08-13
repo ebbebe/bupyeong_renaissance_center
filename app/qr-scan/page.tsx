@@ -102,7 +102,6 @@ export default function QRScanPage() {
           <Scanner
             onScan={handleScan}
             components={{
-              audio: false,
               finder: false,
             }}
             styles={{
