@@ -2,6 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+
+// 카카오맵을 동적으로 import (SSR 비활성화)
+const KakaoMap = dynamic(() => import("@/components/KakaoMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
+      <p className="text-gray-500">지도를 불러오는 중...</p>
+    </div>
+  ),
+});
 
 // 카테고리 데이터
 const categories = [
@@ -57,15 +68,10 @@ export default function FacilitiesPage() {
 
   return (
     <div className="relative min-h-screen bg-gray-100 overflow-hidden">
-      {/* Map Background */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `url('/images/map_bg.png')`,
-          backgroundPosition: '55% 50%',
-          backgroundSize: '200%'
-        }}
-      />
+      {/* Kakao Map */}
+      <div className="absolute inset-0">
+        <KakaoMap latitude={37.4907} longitude={126.7246} level={4} />
+      </div>
 
       {/* Location Markers (현재 선택된 카테고리의 마커만 표시) */}
       {selectedCategory && (
