@@ -25,14 +25,30 @@ export default function KakaoMap({
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY || "28477889edc216bfc45127f2cb90ecc0";
-    console.log("카카오맵 API 키:", apiKey ? "설정됨" : "없음");
+    const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY;
+    
+    if (!apiKey) {
+      setError("카카오맵 API 키가 설정되지 않았습니다.");
+      return;
+    }
+    
+    // 기존 스크립트 확인 및 제거
+    const existingScript = document.querySelector('script[src*="dapi.kakao.com"]');
+    if (existingScript) {
+      existingScript.remove();
+    }
     
     const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false`;
+    script.type = "text/javascript";
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false`;
     script.async = true;
 
     script.onload = () => {
+      if (!window.kakao || !window.kakao.maps) {
+        setError("카카오맵 객체를 찾을 수 없습니다.");
+        return;
+      }
+
       window.kakao.maps.load(() => {
         if (!mapContainer.current) return;
 
@@ -61,14 +77,14 @@ export default function KakaoMap({
 
           setMapLoaded(true);
         } catch (err) {
-          console.error("카카오맵 초기화 오류:", err);
-          setError("지도를 불러오는 중 오류가 발생했습니다.");
+          console.error("맵 초기화 중 오류:", err);
+          setError("지도 초기화 중 오류가 발생했습니다.");
         }
       });
     };
 
     script.onerror = () => {
-      setError("카카오맵 스크립트를 불러올 수 없습니다.");
+      setError("카카오맵을 불러올 수 없습니다. API 키와 도메인 등록을 확인하세요.");
     };
 
     document.head.appendChild(script);

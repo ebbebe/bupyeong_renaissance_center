@@ -1,0 +1,5 @@
+<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M18 0C11.4 0 6 5.4 6 12C6 21 18 36 18 36S30 21 30 12C30 5.4 24.6 0 18 0Z" fill="#10B981"/>
+  <circle cx="18" cy="12" r="8" fill="white"/>
+  <text x="18" y="16" text-anchor="middle" font-size="10" fill="#10B981">🚌</text>
+</svg>

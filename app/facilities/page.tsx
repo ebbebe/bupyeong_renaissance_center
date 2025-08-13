@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
 // 카카오맵을 동적으로 import (SSR 비활성화)
-const KakaoMap = dynamic(() => import("@/components/KakaoMap"), {
+const KakaoMapWithSearch = dynamic(() => import("@/components/KakaoMapWithSearch"), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
@@ -20,36 +20,25 @@ const categories = [
     id: "toilet",
     name: "화장실",
     icon: "/images/toilet_icon.png",
-    locations: [
-      { id: 1, name: "부평역 1번 출구", lat: 37.4907, lng: 126.7246 },
-      { id: 2, name: "부평문화의거리 공중화장실", lat: 37.4915, lng: 126.7235 }
-    ]
+    description: "공중화장실"
   },
   {
     id: "parking",
     name: "주차장",
     icon: "/images/parking_icon.png",
-    locations: [
-      { id: 1, name: "부평역 공영주차장", lat: 37.4910, lng: 126.7250 },
-      { id: 2, name: "문화의거리 주차장", lat: 37.4920, lng: 126.7240 }
-    ]
+    description: "공영주차장"
   },
   {
-    id: "charging",
-    name: "전기차 충전",
-    icon: "/images/charging_icon.png",
-    locations: [
-      { id: 1, name: "부평구청 충전소", lat: 37.4925, lng: 126.7255 }
-    ]
-  },
-  {
-    id: "transport",
-    name: "대중교통",
+    id: "bus",
+    name: "버스",
     icon: "/images/bus_icon.png",
-    locations: [
-      { id: 1, name: "부평역", lat: 37.4907, lng: 126.7246 },
-      { id: 2, name: "부평시장역", lat: 37.4989, lng: 126.7222 }
-    ]
+    description: "버스정류장"
+  },
+  {
+    id: "subway",
+    name: "지하철",
+    icon: "/images/subway_icon.png",
+    description: "지하철역"
   }
 ];
 
@@ -57,6 +46,8 @@ export default function FacilitiesPage() {
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<any>(null);
+  const [searchResultCount, setSearchResultCount] = useState<number>(0);
 
   useEffect(() => {
     setTimeout(() => setIsLoaded(true), 100);
@@ -64,19 +55,30 @@ export default function FacilitiesPage() {
 
   const handleCategoryClick = (categoryId: string) => {
     setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
+    setSelectedLocation(null);
+  };
+
+  const handleLocationSelect = (location: any) => {
+    setSelectedLocation(location);
   };
 
   return (
     <div className="relative min-h-screen bg-gray-100 overflow-hidden">
-      {/* Kakao Map */}
+      {/* Kakao Map with Search */}
       <div className="absolute inset-0">
-        <KakaoMap latitude={37.4907} longitude={126.7246} level={4} />
+        <KakaoMapWithSearch 
+          latitude={37.4907} 
+          longitude={126.7246} 
+          level={4}
+          selectedCategory={selectedCategory}
+          onLocationSelect={handleLocationSelect}
+        />
       </div>
 
       {/* 마커는 카카오맵에서 직접 표시하도록 수정 예정 */}
 
       {/* Back Button */}
-      <div className={`absolute left-6 top-12 z-50 transition-all duration-700 ${
+      <div className={`absolute left-6 top-12 z-[1000] transition-all duration-700 ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
       }`}>
         <button
@@ -90,7 +92,7 @@ export default function FacilitiesPage() {
       </div>
 
       {/* Bottom Category Bar */}
-      <div className={`absolute bottom-8 left-4 right-4 transition-all duration-700 ${
+      <div className={`absolute bottom-8 left-4 right-4 z-[1000] transition-all duration-700 ${
         isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
         <div className="flex gap-3 justify-center">
@@ -128,17 +130,33 @@ export default function FacilitiesPage() {
         </div>
       </div>
 
-      {/* Selected Category Info */}
-      {selectedCategory && (
-        <div className={`absolute top-24 left-4 right-4 bg-white/90 backdrop-blur-md rounded-xl p-4 shadow-lg transition-all duration-500 ${
+      {/* Selected Location Info */}
+      {selectedLocation && (
+        <div className={`absolute top-24 left-4 right-4 z-[1000] bg-white/95 backdrop-blur-md rounded-xl p-4 shadow-lg transition-all duration-500 ${
           isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
         }`}>
-          <h2 className="text-lg font-bold mb-2">
-            {categories.find(cat => cat.id === selectedCategory)?.name}
+          <button
+            onClick={() => setSelectedLocation(null)}
+            className="absolute top-2 right-2 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+          >
+            <span className="text-gray-600">×</span>
+          </button>
+          <h2 className="text-lg font-bold mb-2 pr-6">
+            {selectedLocation.place_name}
           </h2>
-          <p className="text-sm text-gray-600">
-            {categories.find(cat => cat.id === selectedCategory)?.locations.length}개 위치
+          <p className="text-sm text-gray-600 mb-1">
+            {selectedLocation.road_address_name || selectedLocation.address_name}
           </p>
+          {selectedLocation.phone && (
+            <p className="text-sm text-gray-600 mb-1">
+              📞 {selectedLocation.phone}
+            </p>
+          )}
+          {selectedLocation.distance && (
+            <p className="text-sm text-gray-600">
+              📍 현재 위치에서 {selectedLocation.distance}m
+            </p>
+          )}
         </div>
       )}
     </div>

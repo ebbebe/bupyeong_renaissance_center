@@ -17,7 +17,7 @@ export default function Splash() {
       setTimeout(() => {
         router.push("/main");
       }, 500); // Wait for fade out animation
-    }, 200000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [router]);
