@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
 // QR Scanner를 dynamic import로 불러오기 (SSR 비활성화)
-const QrScanner = dynamic(
+const Scanner = dynamic(
   () => import("@yudiel/react-qr-scanner").then((mod) => mod.Scanner),
   { 
     ssr: false,
     loading: () => (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center min-h-screen bg-black">
         <div className="text-white">카메라 로딩 중...</div>
       </div>
     )
@@ -23,14 +23,14 @@ export default function QRScanPage() {
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setTimeout(() => setIsLoaded(true), 100);
   }, []);
 
-  const handleScan = (result: string) => {
-    if (result && isScanning) {
+  const handleScan = (detectedCodes: any[]) => {
+    if (detectedCodes && detectedCodes.length > 0 && isScanning) {
+      const result = detectedCodes[0].rawValue;
       console.log("QR 코드 스캔됨:", result);
       setScanResult(result);
       setIsScanning(false);
@@ -88,38 +88,33 @@ export default function QRScanPage() {
     }
   };
 
-  const handleError = (error: unknown) => {
-    console.error("QR 스캔 에러:", error);
-    setError("카메라 접근 권한이 필요합니다.");
-  };
-
   const resetScan = () => {
     setScanResult(null);
     setIsScanning(true);
     setShowSuccess(false);
-    setError(null);
   };
 
   return (
     <div className="relative min-h-screen bg-black">
       {/* QR Scanner */}
       <div className="absolute inset-0">
-        {isScanning && !error && (
-          <QrScanner
-            onDecode={handleScan}
-            onError={handleError}
-            constraints={{
-              facingMode: "environment", // 후면 카메라 사용
-              aspectRatio: { ideal: 1 }
+        {isScanning && (
+          <Scanner
+            onScan={handleScan}
+            components={{
+              audio: false,
+              finder: false,
             }}
-            containerStyle={{
-              width: "100%",
-              height: "100%"
-            }}
-            videoStyle={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover"
+            styles={{
+              container: {
+                width: "100%",
+                height: "100vh"
+              },
+              video: {
+                width: "100%",
+                height: "100%",
+                objectFit: "cover" as const
+              }
             }}
           />
         )}
@@ -185,22 +180,6 @@ export default function QRScanPage() {
                 다시 스캔
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Error Message */}
-      {error && (
-        <div className="absolute inset-0 bg-black flex items-center justify-center">
-          <div className="bg-white rounded-2xl p-8 max-w-sm mx-4">
-            <h2 className="text-xl font-bold mb-4 text-center">카메라 권한 필요</h2>
-            <p className="text-gray-600 text-center mb-6">{error}</p>
-            <button
-              onClick={() => router.push("/main")}
-              className="w-full px-6 py-3 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 transition-colors"
-            >
-              메인으로 돌아가기
-            </button>
           </div>
         </div>
       )}
