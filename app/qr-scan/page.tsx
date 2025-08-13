@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 
 // QR Scanner를 dynamic import로 불러오기 (SSR 비활성화)
 const QrScanner = dynamic(
-  () => import("@yudiel/react-qr-scanner").then((mod) => mod.QrScanner),
+  () => import("@yudiel/react-qr-scanner").then((mod) => mod.Scanner),
   { 
     ssr: false,
     loading: () => (
