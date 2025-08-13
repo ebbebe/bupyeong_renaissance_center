@@ -252,6 +252,20 @@ export default function KakaoMapWithSearch({
     console.log("위치 정보 요청 시작...");
     setLocationLoading(true);
     
+    // 모바일 환경 감지
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    // HTTPS 체크 (모바일에서 중요)
+    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && isMobile) {
+      console.log("모바일에서 HTTPS가 아니므로 위치 서비스를 사용할 수 없습니다.");
+      setUserLocation({
+        lat: latitude,
+        lng: longitude
+      });
+      setLocationLoading(false);
+      return;
+    }
+    
     const requestLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -267,32 +281,55 @@ export default function KakaoMapWithSearch({
           },
           (error) => {
             console.error("위치 정보 에러:", error.code, error.message);
-            // 에러 시 재시도
-            if (error.code === 3) { // 타임아웃인 경우
-              console.log("타임아웃 발생, 재시도...");
-              setTimeout(requestLocation, 1000); // 1초 후 재시도
-            } else {
-              // 권한 거부나 위치 서비스 비활성화 시 계속 대기
-              console.log("위치 권한이 필요합니다. 브라우저 설정에서 위치 권한을 허용해주세요.");
-              // 위치 권한 재요청을 위한 안내 표시
+            
+            // 모바일에서는 에러 시 바로 부평역으로 설정
+            if (isMobile) {
+              console.log("모바일에서 위치 정보 실패, 부평역으로 설정");
+              setUserLocation({
+                lat: latitude,
+                lng: longitude
+              });
+              setLocationLoading(false);
+              return;
+            }
+            
+            // PC에서의 에러 처리
+            if (error.code === 3) { // 타임아웃
+              console.log("타임아웃 발생, 부평역으로 설정");
+              setUserLocation({
+                lat: latitude,
+                lng: longitude
+              });
+              setLocationLoading(false);
+            } else if (error.code === 1) { // 권한 거부
               setError("위치 권한이 필요합니다. 브라우저 설정에서 위치 권한을 허용한 후 새로고침해주세요.");
+              setLocationLoading(false);
+            } else { // 기타 에러
+              setUserLocation({
+                lat: latitude,
+                lng: longitude
+              });
               setLocationLoading(false);
             }
           },
           {
-            enableHighAccuracy: true, // 정확도 높임
-            timeout: 10000, // 10초 타임아웃
-            maximumAge: 0 // 캐시 사용 안함
+            enableHighAccuracy: false, // 모바일에서 빠른 응답을 위해 false
+            timeout: isMobile ? 5000 : 10000, // 모바일은 5초, PC는 10초
+            maximumAge: 60000 // 1분 캐시 허용
           }
         );
       } else {
         console.log("Geolocation API를 지원하지 않는 브라우저입니다.");
-        setError("이 브라우저는 위치 서비스를 지원하지 않습니다.");
+        setUserLocation({
+          lat: latitude,
+          lng: longitude
+        });
         setLocationLoading(false);
       }
     };
     
-    requestLocation();
+    // 약간의 지연 후 요청 (모바일 환경에서 더 잘 작동)
+    setTimeout(requestLocation, 500);
   }, []); // 빈 배열로 한 번만 실행
 
   // 카카오맵 초기화 (한 번만 실행)
