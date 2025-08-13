@@ -6,9 +6,19 @@ interface MenuCardProps {
   imageSrc: string;
   delay: number;
   isLoaded: boolean;
+  imageOffset?: { x: number; y: number };
+  imageSize?: { width: number; height: number };
 }
 
-export default function MenuCard({ href, title, imageSrc, delay, isLoaded }: MenuCardProps) {
+export default function MenuCard({ 
+  href, 
+  title, 
+  imageSrc, 
+  delay, 
+  isLoaded, 
+  imageOffset = { x: 0, y: 0 },
+  imageSize = { width: 160, height: 160 }
+}: MenuCardProps) {
   return (
     <Link href={href}>
       <div 
@@ -21,7 +31,12 @@ export default function MenuCard({ href, title, imageSrc, delay, isLoaded }: Men
           <img
             src={imageSrc}
             alt={title}
-            className="w-[140px] h-[140px] object-contain opacity-60 hover:opacity-80 transition-opacity"
+            className="object-contain opacity-100 transition-transform hover:scale-110"
+            style={{
+              width: `${imageSize.width}px`,
+              height: `${imageSize.height}px`,
+              transform: `translate(${imageOffset.x}px, ${imageOffset.y}px)`
+            }}
           />
         </div>
         <div className="absolute bottom-4 left-0 right-0 text-center">

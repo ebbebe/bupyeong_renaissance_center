@@ -26,28 +26,36 @@ const menuItems = [
     href: "/story",
     title: "부평 이야기",
     imageSrc: images.story,
-    delay: 800
+    delay: 800,
+    imageOffset: { x: 0, y: -10 },
+    imageSize: { width: 160, height: 160 }  // 기본 크기
   },
   {
     id: "facilities",
     href: "/facilities",
     title: "주변 편의시설",
     imageSrc: images.facilities,
-    delay: 900
+    delay: 900,
+    imageOffset: { x: -5, y: -15 },
+    imageSize: { width: 150, height: 150 }  // 조금 크게
   },
   {
     id: "events",
     href: "/events",
     title: "행사 정보",
     imageSrc: images.events,
-    delay: 1000
+    delay: 1000,
+    imageOffset: { x: 0, y: -10 },
+    imageSize: { width: 160, height: 160 }  // 조금 작게
   },
   {
     id: "stamps",
     href: "/stamps",
     title: "내 스탬프 현황",
     imageSrc: images.stamp,
-    delay: 1100
+    delay: 1100,
+    imageOffset: { x: 10, y: -20 },
+    imageSize: { width: 190, height: 190 }  // 더 작게
   }
 ];
 
@@ -98,6 +106,8 @@ export default function MainScreen() {
               imageSrc={item.imageSrc}
               delay={item.delay}
               isLoaded={isLoaded}
+              imageOffset={item.imageOffset}
+              imageSize={item.imageSize}
             />
           ))}
         </div>
