@@ -102,17 +102,6 @@ export default function AdminPage() {
       )
     },
     {
-      id: "stamps",
-      title: "스탬프",
-      description: "상점 정보 관리",
-      icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      )
-    },
-    {
       id: "events",
       title: "행사 정보",
       description: "이벤트 관리",
@@ -207,25 +196,6 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-sm text-gray-500 mb-1">총 스토리</p>
-            <p className="text-2xl font-semibold text-gray-900">12</p>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-sm text-gray-500 mb-1">활성 이벤트</p>
-            <p className="text-2xl font-semibold text-gray-900">3</p>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-sm text-gray-500 mb-1">스탬프 위치</p>
-            <p className="text-2xl font-semibold text-gray-900">8</p>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-sm text-gray-500 mb-1">오늘 방문</p>
-            <p className="text-2xl font-semibold text-gray-900">127</p>
-          </div>
-        </div>
       </div>
     </div>
   );
