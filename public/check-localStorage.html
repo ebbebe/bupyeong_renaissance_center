@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LocalStorage Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        pre {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .empty {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>LocalStorage 데이터 확인</h1>
+    
+    <div class="section">
+        <h2>부평 이야기 (bupyeong_stories)</h2>
+        <pre id="stories"></pre>
+    </div>
+    
+    <div class="section">
+        <h2>이벤트 (bupyeong_events)</h2>
+        <pre id="events"></pre>
+    </div>
+    
+    <div class="section">
+        <h2>스탬프 (bupyeong_stamps)</h2>
+        <pre id="stamps"></pre>
+    </div>
+
+    <div class="section">
+        <h2>기타 localStorage 항목</h2>
+        <pre id="others"></pre>
+    </div>
+
+    <script>
+        // 데이터 확인
+        const storiesData = localStorage.getItem('bupyeong_stories');
+        const eventsData = localStorage.getItem('bupyeong_events');
+        const stampsData = localStorage.getItem('bupyeong_stamps');
+        
+        // 표시
+        document.getElementById('stories').innerHTML = storiesData 
+            ? JSON.stringify(JSON.parse(storiesData), null, 2)
+            : '<span class="empty">데이터 없음</span>';
+            
+        document.getElementById('events').innerHTML = eventsData
+            ? JSON.stringify(JSON.parse(eventsData), null, 2)
+            : '<span class="empty">데이터 없음</span>';
+            
+        document.getElementById('stamps').innerHTML = stampsData
+            ? JSON.stringify(JSON.parse(stampsData), null, 2)
+            : '<span class="empty">데이터 없음</span>';
+        
+        // 기타 항목 확인
+        const others = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!['bupyeong_stories', 'bupyeong_events', 'bupyeong_stamps'].includes(key)) {
+                others.push({
+                    key: key,
+                    value: localStorage.getItem(key)
+                });
+            }
+        }
+        
+        document.getElementById('others').innerHTML = others.length > 0
+            ? JSON.stringify(others, null, 2)
+            : '<span class="empty">기타 데이터 없음</span>';
+            
+        // 요약 정보
+        console.log('=== LocalStorage 요약 ===');
+        console.log('Stories:', storiesData ? JSON.parse(storiesData).length + '개' : '없음');
+        console.log('Events:', eventsData ? JSON.parse(eventsData).length + '개' : '없음');
+        console.log('Stamps:', stampsData ? JSON.parse(stampsData).length + '개' : '없음');
+        console.log('기타 항목:', others.length + '개');
+    </script>
+</body>
+</html>

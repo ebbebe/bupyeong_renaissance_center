@@ -10,7 +10,13 @@ interface EventCardProps {
 
 export default function EventCard({ title, imageSrc, link, delay = 0, isVisible = true }: EventCardProps) {
   const handleClick = () => {
-    window.open(link, '_blank');
+    if (link && link !== "#") {
+      // URL이 http:// 또는 https://로 시작하지 않으면 https://를 추가
+      const fullUrl = link.startsWith('http://') || link.startsWith('https://') 
+        ? link 
+        : `https://${link}`;
+      window.open(fullUrl, '_blank');
+    }
   };
 
   return (

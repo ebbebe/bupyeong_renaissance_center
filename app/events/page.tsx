@@ -4,54 +4,49 @@ import { useState, useEffect } from "react";
 import EventsHeader from "@/components/events/EventsHeader";
 import TabMenu from "@/components/events/TabMenu";
 import EventCard from "@/components/events/EventCard";
-
-// Sample event data (나중에 DB에서 가져올 데이터)
-const ongoingEvents = [
-  {
-    id: 1,
-    title: "SUMMER FESTIVAL",
-    imageSrc: "/images/summer_festival.png",
-    link: "https://example.com/summer-festival"
-  },
-  {
-    id: 2,
-    title: "MUSIC Festival",
-    imageSrc: "/images/music_festival.png",
-    link: "https://example.com/music-festival"
-  },
-  {
-    id: 3,
-    title: "ELECTRO PARTY",
-    imageSrc: "/images/electro_festival.png",
-    link: "https://example.com/electro-party"
-  }
-];
-
-const infoData = [
-  {
-    id: 1,
-    title: "행사 참가 안내",
-    content: "모든 행사는 사전 등록이 필요합니다."
-  },
-  {
-    id: 2,
-    title: "주차 안내",
-    content: "행사장 인근 공영주차장을 이용해주세요."
-  },
-  {
-    id: 3,
-    title: "문의처",
-    content: "부평구청 문화관광과 032-509-6000"
-  }
-];
+import { eventAPI, EventItem, eventInfoAPI, EventInfo } from "@/lib/supabase";
 
 export default function EventsPage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<'ongoing' | 'info'>('ongoing');
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [infoData, setInfoData] = useState<EventInfo[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => setIsLoaded(true), 100);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [eventsData, infoDataResults] = await Promise.all([
+          eventAPI.getAll(),
+          eventInfoAPI.getAll()
+        ]);
+        setEvents(eventsData.filter(event => event.is_active));
+        setInfoData(infoDataResults);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+        setTimeout(() => setIsLoaded(true), 100);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="relative min-h-screen bg-[#fcfcfc] overflow-hidden">
+        <EventsHeader />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <p className="text-gray-600">이벤트를 불러오는 중...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-[#fcfcfc] overflow-hidden">
@@ -109,16 +104,23 @@ export default function EventsPage() {
         <div className="backdrop-blur-md bg-white/70 rounded-xl border-[2.67px] border-white shadow-lg p-4 min-h-[400px]">
           {activeTab === 'ongoing' ? (
             <div className="space-y-4">
-              {ongoingEvents.map((event, index) => (
-                <EventCard
-                  key={event.id}
-                  title={event.title}
-                  imageSrc={event.imageSrc}
-                  link={event.link}
-                  delay={400 + index * 100}
-                  isVisible={isLoaded}
-                />
-              ))}
+              {events.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  <p>현재 진행 중인 이벤트가 없습니다.</p>
+                  <p className="text-sm mt-2">관리자 페이지에서 이벤트를 추가해보세요.</p>
+                </div>
+              ) : (
+                events.map((event, index) => (
+                  <EventCard
+                    key={event.id}
+                    title={event.title}
+                    imageSrc={event.image_url || "/images/default_event.png"}
+                    link={event.url || "#"}
+                    delay={400 + index * 100}
+                    isVisible={isLoaded}
+                  />
+                ))
+              )}
             </div>
           ) : (
             <div className="space-y-4 py-4">

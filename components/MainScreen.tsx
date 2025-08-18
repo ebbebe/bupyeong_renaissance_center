@@ -55,7 +55,7 @@ const menuItems = [
     imageSrc: images.stamp,
     delay: 1100,
     imageOffset: { x: 10, y: -20 },
-    imageSize: { width: 190, height: 190 }  // 더 작게
+    imageSize: { width: 180, height: 180 }  // 더 작게
   }
 ];
 

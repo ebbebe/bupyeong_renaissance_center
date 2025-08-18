@@ -2,189 +2,90 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-
-// 상세 페이지 데이터 구조
-interface StoryDetail {
-  id: string;
-  title: string;
-  subtitle: string;
-  content: string[];
-  imageSrc: string;
-  imageMask?: string;
-}
-
-// 각 스토리 아이템별 상세 데이터
-const storyDetails: Record<string, StoryDetail> = {
-  "culture-history": {
-    id: "culture-history",
-    title: "문화의 거리와 역사",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  "character-intro": {
-    id: "character-intro",
-    title: "부평 캐릭터 소개",
-    subtitle: "부평구를 대표하는 마스코트",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  "store-map": {
-    id: "store-map",
-    title: "상점 안내지도",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  // B ZONE - 부평의 인물
-  "historical-figures": {
-    id: "historical-figures",
-    title: "역사적 인물",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  "modern-figures": {
-    id: "modern-figures",
-    title: "현대 인물",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  "artists": {
-    id: "artists",
-    title: "문화예술인",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  // C ZONE - 행사와 축제
-  "annual-events": {
-    id: "annual-events",
-    title: "연례 행사",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  "seasonal-festivals": {
-    id: "seasonal-festivals",
-    title: "계절별 축제",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  "cultural-events": {
-    id: "cultural-events",
-    title: "문화 이벤트",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  // D ZONE - 부평의 역사
-  "joseon-era": {
-    id: "joseon-era",
-    title: "조선시대",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  "japanese-occupation": {
-    id: "japanese-occupation",
-    title: "일제강점기",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  },
-  "modern-history": {
-    id: "modern-history",
-    title: "현대사",
-    subtitle: "상인이 만든 거리, 지켜가는 문화",
-    content: [
-      "'문화의거리'라는 개념은 1990년부터 한국 사회에 도입되었으며, 이는 초대 문화부 장관인 이어령이 지역의 문화 환경을 개선하기 위한 정책으로 각 지방자치단체에 문화의 거리 조성을 권장한 데에서 비롯되었다. 이후 각 지자체는 문화행사나 축제 개최, 지역 문화시설 조성 등을 통해 지역 경제 활성화를 도모했으나, 대부분의 문화의 거리는 지역 고유의 특색이나 정체성을 반영하지 못하고 조형물 설치나 일회성 행사 위주의 전시행정에 머무는 한계를 보였다.",
-      "이와는 다르게 '부평문화의거리'는 행정기관 주도가 아닌, 변화의 필요성을 절실히 느낀 지역 상인들의 자발적인 참여로 시작되었다. 상인들은 행정의 무관심과 노점상 반발, 시민들의 의구심 속에서도 거리의 변화를 주도했고, 갈등과 협력을 거치며 '우리가 거리의 주인'이라는 공동체 의식을 형성하게 되었다. 부평문화의 거리는 단순한 공간 조성보다 그 과정을 통해 지역 정체성과 차별성을 획득한 사례로 평가된다.",
-      "한편, 부평문화의거리는 1955년부터 상권이 형성되기 시작했으며, 1996년 건물주와 세입자들이 '문화의거리 발전추진위원회'를 조직하면서 본격적인 거리 조성 사업이 시작되었다. 1998년에는 차 없는 상가 거리로 재탄생하였고, 2000년대부터는 길거리 공연장과 프리마켓이 열리는 문화 공간으로 발전하였다.",
-      "거리 내 일부 구역은 과거 '커튼골목'이라 불리던 곳이었으나, 2016년 이후 젊은 세대를 겨냥한 상점들이 입점하면서 '평리단길'로 새롭게 불리게 되었다. 이는 서울 경리단길 상권에서 차용한 이름으로, 현재는 카페, 디저트숍, 와인바 등이 모여 젊은 감성의 상권으로 변화하고 있다."
-    ],
-    imageSrc: "/images/culture_street.png",
-    imageMask: "/images/culture_mask.svg"
-  }
-};
+import { storyAPI, StoryItem } from "@/lib/supabase";
 
 export default function StoryDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [story, setStory] = useState<StoryItem | null>(null);
+  const [loading, setLoading] = useState(true);
   const resolvedParams = use(params);
-  const detail = storyDetails[resolvedParams.id] || storyDetails["culture-history"];
 
   useEffect(() => {
-    setTimeout(() => setIsLoaded(true), 100);
-  }, []);
+    const fetchStory = async () => {
+      try {
+        setLoading(true);
+        const stories = await storyAPI.getAll();
+        
+        // ID로 스토리 찾기 (DB의 UUID와 매칭되지 않을 수 있으므로 order_index 사용)
+        let foundStory = stories.find(s => s.id === resolvedParams.id);
+        
+        // ID로 찾지 못했다면 URL 파라미터를 기반으로 찾기
+        if (!foundStory) {
+          const storyMap: Record<string, number> = {
+            "culture-history": 1,
+            "character-intro": 2,
+            "store-map": 3,
+            "historical-figures": 4,
+            "modern-figures": 5,
+            "artists": 6,
+            "annual-events": 7,
+            "seasonal-festivals": 8,
+            "cultural-events": 9,
+            "joseon-era": 10,
+            "japanese-occupation": 11,
+            "modern-history": 12
+          };
+          
+          const targetIndex = storyMap[resolvedParams.id];
+          if (targetIndex) {
+            foundStory = stories.find(s => s.order_index === targetIndex);
+          }
+        }
+        
+        // 여전히 찾지 못했다면 첫 번째 스토리 사용
+        if (!foundStory && stories.length > 0) {
+          foundStory = stories[0];
+        }
+        
+        setStory(foundStory || null);
+      } catch (error) {
+        console.error("Error fetching story:", error);
+      } finally {
+        setLoading(false);
+        setTimeout(() => setIsLoaded(true), 100);
+      }
+    };
+
+    fetchStory();
+  }, [resolvedParams.id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">스토리를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!story) {
+    return (
+      <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">스토리를 찾을 수 없습니다.</p>
+          <button
+            onClick={() => router.back()}
+            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+          >
+            돌아가기
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-[#fcfcfc] overflow-hidden">
@@ -201,7 +102,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
               <path d="M12 2L2 12L12 22" stroke="#000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          <h1 className="text-[24px] font-bold text-black px-12 text-center">{detail.title}</h1>
+          <h1 className="text-[24px] font-bold text-black px-12 text-center">{story.title}</h1>
         </div>
       </div>
 
@@ -213,24 +114,24 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
         }`} style={{ transitionDelay: '200ms' }}>
           <div 
             className="absolute inset-0"
-            style={detail.imageMask ? {
-              backgroundImage: `url('${detail.imageSrc}')`,
+            style={story.image_mask ? {
+              backgroundImage: `url('${story.image_url}')`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              maskImage: `url('${detail.imageMask}')`,
+              maskImage: `url('${story.image_mask}')`,
               maskSize: '383px 309px',
               maskPosition: 'center',
               maskRepeat: 'no-repeat',
-              WebkitMaskImage: `url('${detail.imageMask}')`,
+              WebkitMaskImage: `url('${story.image_mask}')`,
               WebkitMaskSize: '383px 309px',
               WebkitMaskPosition: 'center',
               WebkitMaskRepeat: 'no-repeat'
             } : {}}
           >
-            {!detail.imageMask && (
+            {!story.image_mask && story.image_url && (
               <img 
-                src={detail.imageSrc} 
-                alt={detail.title}
+                src={story.image_url} 
+                alt={story.title}
                 className="w-full h-full object-cover"
               />
             )}
@@ -248,23 +149,30 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
         <div className={`px-6 mb-6 transition-all duration-700 ${
           isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
         }`} style={{ transitionDelay: '400ms' }}>
-          <h2 className="text-[24px] font-bold text-black text-center">
-            {detail.subtitle}
-          </h2>
+          <p className="text-[18px] font-medium text-[#666] leading-[28px]">
+            {story.subtitle}
+          </p>
         </div>
 
-        {/* Content text */}
-        <div className={`px-6 pb-12 transition-all duration-700 ${
-          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`} style={{ transitionDelay: '600ms' }}>
-          <div className="space-y-4 text-[12px] leading-[23px] text-black">
-            {detail.content.map((paragraph, index) => (
-              <p key={index} className="text-justify">
+        {/* Content */}
+        <div className="px-6 mb-12">
+          {story.content.map((paragraph, index) => (
+            <div 
+              key={index}
+              className={`mb-6 transition-all duration-700 ${
+                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}
+              style={{ transitionDelay: `${600 + index * 100}ms` }}
+            >
+              <p className="text-[16px] text-[#333] leading-[28px] font-normal">
                 {paragraph}
               </p>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
+
+        {/* Bottom spacing */}
+        <div className="h-20"></div>
       </div>
     </div>
   );
