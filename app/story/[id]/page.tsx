@@ -80,41 +80,18 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* Main content */}
       <div className="pt-28">
-        {/* Image section with mask */}
-        <div className={`relative h-[320px] mb-8 transition-all duration-700 ${
+        {/* Image section */}
+        <div className={`relative mx-6 h-[280px] mb-8 transition-all duration-700 ${
           isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
         }`} style={{ transitionDelay: '200ms' }}>
-          <div 
-            className="absolute inset-0"
-            style={story.image_mask ? {
-              backgroundImage: `url('${story.image_url}')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              maskImage: `url('${story.image_mask}')`,
-              maskSize: '383px 309px',
-              maskPosition: 'center',
-              maskRepeat: 'no-repeat',
-              WebkitMaskImage: `url('${story.image_mask}')`,
-              WebkitMaskSize: '383px 309px',
-              WebkitMaskPosition: 'center',
-              WebkitMaskRepeat: 'no-repeat'
-            } : {}}
-          >
-            {!story.image_mask && story.image_url && (
-              <img 
-                src={story.image_url} 
-                alt={story.title}
-                className="w-full h-full object-cover"
-              />
-            )}
-          </div>
+          {story.image_url && (
+            <img 
+              src={story.image_url} 
+              alt={story.title}
+              className="w-full h-full object-cover rounded-2xl shadow-lg"
+            />
+          )}
 
-          {/* Circle decoration */}
-          <div className="absolute right-8 bottom-8 w-10 h-10">
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <circle cx="20" cy="20" r="19" stroke="#16CB73" strokeWidth="2"/>
-            </svg>
-          </div>
         </div>
 
         {/* Subtitle */}

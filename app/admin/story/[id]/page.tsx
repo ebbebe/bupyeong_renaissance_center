@@ -16,7 +16,6 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
     subtitle: "",
     content: [""],
     image_url: "",
-    image_mask: "",
     category_order: 1
   });
   const [loading, setLoading] = useState(!isNew);
@@ -70,7 +69,6 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
           subtitle: story.subtitle,
           content: story.content || [""],
           image_url: story.image_url,
-          image_mask: story.image_mask,
           category_order: maxCategoryOrder + 1
         });
       } else {
@@ -232,13 +230,6 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
             label="스토리 이미지"
           />
 
-          {/* 이미지 마스크 업로드 */}
-          <ImageUpload
-            currentImageUrl={story.image_mask}
-            onImageChange={(url) => setStory({ ...story, image_mask: url })}
-            folder="stories/masks"
-            label="이미지 마스크 (선택사항)"
-          />
 
           {/* Order Info */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
