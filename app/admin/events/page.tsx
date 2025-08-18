@@ -105,7 +105,7 @@ export default function AdminEventsPage() {
           ].map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => setFilter(key as any)}
+              onClick={() => setFilter(key as "all" | "active" | "inactive")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filter === key
                   ? "bg-gray-900 text-white"

@@ -7,7 +7,7 @@ import { migrateLocalStorageToSupabase, insertDefaultData } from "@/lib/supabase
 export default function MigratePage() {
   const router = useRouter();
   const [migrating, setMigrating] = useState(false);
-  const [results, setResults] = useState<any>(null);
+  const [results, setResults] = useState<{stories: {migrated: number, errors: number}, events: {migrated: number, errors: number}, stamps: {migrated: number, errors: number}} | null>(null);
   const [insertingDefaults, setInsertingDefaults] = useState(false);
 
   // 인증 체크
