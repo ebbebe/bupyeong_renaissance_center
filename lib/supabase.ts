@@ -369,7 +369,7 @@ export const eventInfoAPI = {
 export const migrateLocalStorageToSupabase = async () => {
   if (typeof window === 'undefined') return;
   
-  let migrationResults = {
+  const migrationResults = {
     stories: { migrated: 0, errors: 0 },
     events: { migrated: 0, errors: 0 },
     stamps: { migrated: 0, errors: 0 }
