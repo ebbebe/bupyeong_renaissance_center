@@ -147,7 +147,7 @@ export default function AdminQRPage() {
                     <div>
                       <h3 className="font-medium text-gray-900">{story.title}</h3>
                       <p className="text-sm text-gray-500 mt-1">{story.category}</p>
-                      <p className="text-xs text-gray-400 mt-1">순서: {story.order_index}</p>
+                      <p className="text-xs text-gray-400 mt-1">순서: {story.category_order}</p>
                     </div>
                     {story.image_url && (
                       <img 
