@@ -49,7 +49,7 @@ export default function AdminEventsPage() {
     }
   };
 
-  const toggleActive = async (event: EventItem) => {
+  const toggleActive = async (event: EventItem): Promise<void> => {
     const updated = await eventAPI.update(event.id, {
       is_active: !event.is_active
     });

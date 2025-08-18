@@ -40,7 +40,7 @@ export default function AdminEventInfoEditPage({ params }: { params: Promise<{ i
     if (!isNew) {
       loadInfo();
     }
-  }, [isNew, router]);
+  }, [isNew, router, resolvedParams.id]);
 
   const loadInfo = async () => {
     const data = await eventInfoAPI.getById(resolvedParams.id);
@@ -77,7 +77,7 @@ export default function AdminEventInfoEditPage({ params }: { params: Promise<{ i
     }
   };
 
-  const handleInputChange = (field: keyof EventInfo, value: any) => {
+  const handleInputChange = (field: keyof EventInfo, value: string | number | boolean) => {
     setInfo(prev => ({
       ...prev,
       [field]: value

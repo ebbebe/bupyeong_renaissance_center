@@ -138,7 +138,10 @@ export default function MigratePage() {
 
       for (const story of hardcodedStories) {
         try {
-          await storyAPI.create(story);
+          await storyAPI.create({
+            ...story,
+            category_order: story.order_index
+          });
           successCount++;
         } catch (error) {
           console.error("Error creating story:", error);

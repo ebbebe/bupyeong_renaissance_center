@@ -42,7 +42,7 @@ export default function AdminEventEditPage({ params }: { params: Promise<{ id: s
     if (!isNew) {
       loadEvent();
     }
-  }, [isNew, router]);
+  }, [isNew, router, resolvedParams.id]);
 
   const loadEvent = async () => {
     const data = await eventAPI.getById(resolvedParams.id);
@@ -79,7 +79,7 @@ export default function AdminEventEditPage({ params }: { params: Promise<{ id: s
     }
   };
 
-  const handleInputChange = (field: keyof EventItem, value: any) => {
+  const handleInputChange = (field: keyof EventItem, value: string | boolean) => {
     setEvent(prev => ({
       ...prev,
       [field]: value
