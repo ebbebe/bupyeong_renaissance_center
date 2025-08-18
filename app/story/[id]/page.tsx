@@ -17,36 +17,8 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
         setLoading(true);
         const stories = await storyAPI.getAll();
         
-        // ID로 스토리 찾기 (DB의 UUID와 매칭되지 않을 수 있으므로 order_index 사용)
-        let foundStory = stories.find(s => s.id === resolvedParams.id);
-        
-        // ID로 찾지 못했다면 URL 파라미터를 기반으로 찾기
-        if (!foundStory) {
-          const storyMap: Record<string, number> = {
-            "culture-history": 1,
-            "character-intro": 2,
-            "store-map": 3,
-            "historical-figures": 4,
-            "modern-figures": 5,
-            "artists": 6,
-            "annual-events": 7,
-            "seasonal-festivals": 8,
-            "cultural-events": 9,
-            "joseon-era": 10,
-            "japanese-occupation": 11,
-            "modern-history": 12
-          };
-          
-          const targetIndex = storyMap[resolvedParams.id];
-          if (targetIndex) {
-            foundStory = stories.find(s => s.order_index === targetIndex);
-          }
-        }
-        
-        // 여전히 찾지 못했다면 첫 번째 스토리 사용
-        if (!foundStory && stories.length > 0) {
-          foundStory = stories[0];
-        }
+        // UUID로 스토리 찾기
+        const foundStory = stories.find(s => s.id === resolvedParams.id);
         
         setStory(foundStory || null);
       } catch (error) {

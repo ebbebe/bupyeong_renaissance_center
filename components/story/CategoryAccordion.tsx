@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { storyAPI, type StoryItem } from "@/lib/supabase";
 
 interface SubItem {
   title: string;
@@ -16,59 +17,86 @@ interface CategoryItem {
   subItems?: SubItem[];
 }
 
-const categories: CategoryItem[] = [
-  {
-    id: "a",
-    zone: "A",
-    color: "#FF9A00",
-    title: "거리의 탄생",
-    subItems: [
-      { title: "문화의 거리와 역사", href: "/story/culture-history" },
-      { title: "부평 캐릭터 소개", href: "/story/character-intro" },
-      { title: "상점 안내지도", href: "/story/store-map" }
-    ]
-  },
-  {
-    id: "b",
-    zone: "B",
-    color: "#16CB73",
-    title: "부평의 인물",
-    subItems: [
-      { title: "역사적 인물", href: "/story/historical-figures" },
-      { title: "현대 인물", href: "/story/modern-figures" },
-      { title: "문화예술인", href: "/story/artists" }
-    ]
-  },
-  {
-    id: "c",
-    zone: "C",
-    color: "#16CB73",
-    title: "행사와 축제",
-    subItems: [
-      { title: "연례 행사", href: "/story/annual-events" },
-      { title: "계절별 축제", href: "/story/seasonal-festivals" },
-      { title: "문화 이벤트", href: "/story/cultural-events" }
-    ]
-  },
-  {
-    id: "d",
-    zone: "D",
-    color: "#16CB73",
-    title: "부평의 역사",
-    subItems: [
-      { title: "조선시대", href: "/story/joseon-era" },
-      { title: "일제강점기", href: "/story/japanese-occupation" },
-      { title: "현대사", href: "/story/modern-history" }
-    ]
-  }
-];
-
 export default function CategoryAccordion() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStories = async () => {
+      try {
+        const stories = await storyAPI.getAll();
+        
+        // 카테고리별로 스토리 그룹화
+        const groupedStories: Record<string, StoryItem[]> = {};
+        stories.forEach(story => {
+          if (!groupedStories[story.category]) {
+            groupedStories[story.category] = [];
+          }
+          groupedStories[story.category].push(story);
+        });
+
+        // 카테고리 색상 매핑
+        const colorMap: Record<string, string> = {
+          "A ZONE": "#FF9A00",
+          "B ZONE": "#16CB73", 
+          "C ZONE": "#16CB73",
+          "D ZONE": "#16CB73"
+        };
+
+        // 카테고리 제목 매핑
+        const categoryTitleMap: Record<string, string> = {
+          "A ZONE": "거리의 탄생",
+          "B ZONE": "부평의 인물", 
+          "C ZONE": "행사와 축제",
+          "D ZONE": "부평의 역사"
+        };
+
+        // CategoryItem 형태로 변환
+        const categoryItems: CategoryItem[] = Object.entries(groupedStories).map(([category, categoryStories]) => {
+          const zone = category.replace(" ZONE", "");
+          
+          // category_order로 정렬하여 UUID 사용
+          const subItems = categoryStories
+            .sort((a, b) => (a.category_order || 999) - (b.category_order || 999))
+            .map(story => ({
+              title: story.title,
+              href: `/story/${story.id}`  // UUID 사용
+            }));
+
+          return {
+            id: zone.toLowerCase(),
+            zone: zone,
+            color: colorMap[category] || "#16CB73",
+            title: categoryTitleMap[category] || category,
+            subItems
+          };
+        });
+
+        setCategories(categoryItems.sort((a, b) => a.zone.localeCompare(b.zone)));
+      } catch (error) {
+        console.error("Error fetching stories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStories();
+  }, []);
 
   const toggleCategory = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="h-20 bg-white/50 rounded-xl animate-pulse" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

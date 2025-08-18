@@ -17,7 +17,7 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
     content: [""],
     image_url: "",
     image_mask: "",
-    order_index: 1
+    category_order: 1
   });
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
@@ -57,6 +57,13 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
     
     try {
       if (isNew) {
+        // 새 스토리 생성 시 해당 카테고리의 마지막 순서 + 1로 설정
+        const existingStories = await storyAPI.getAll();
+        const categoryStories = existingStories.filter(s => s.category === story.category);
+        const maxCategoryOrder = categoryStories.length > 0 
+          ? Math.max(...categoryStories.map(s => s.category_order || 0))
+          : 0;
+        
         await storyAPI.create({
           category: story.category!,
           title: story.title,
@@ -64,7 +71,7 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
           content: story.content || [""],
           image_url: story.image_url,
           image_mask: story.image_mask,
-          order_index: story.order_index || 1
+          category_order: maxCategoryOrder + 1
         });
       } else {
         await storyAPI.update(resolvedParams.id, story);
@@ -233,18 +240,18 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
             label="이미지 마스크 (선택사항)"
           />
 
-          {/* Order Index */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              표시 순서
-            </label>
-            <input
-              type="number"
-              value={story.order_index}
-              onChange={(e) => setStory({ ...story, order_index: parseInt(e.target.value) })}
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
-              min="1"
-            />
+          {/* Order Info */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start">
+              <svg className="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div className="text-sm text-blue-800">
+                <p className="font-medium mb-1">순서 관리</p>
+                <p>스토리 순서는 목록 페이지에서 위/아래 버튼으로 조정할 수 있습니다.</p>
+                <p>새로 추가되는 스토리는 해당 카테고리의 맨 마지막에 배치됩니다.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

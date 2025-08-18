@@ -45,10 +45,45 @@ export default function AdminStoryPage() {
     loadStories();
   };
 
+  const moveStory = async (story: StoryItem, direction: 'up' | 'down') => {
+    const categoryStories = stories
+      .filter(s => s.category === story.category)
+      .sort((a, b) => a.category_order - b.category_order);
+    
+    const currentIndex = categoryStories.findIndex(s => s.id === story.id);
+    if (currentIndex === -1) return;
+    
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= categoryStories.length) return;
+    
+    const targetStory = categoryStories[targetIndex];
+    
+    // 순서 교체
+    try {
+      await Promise.all([
+        storyAPI.update(story.id, { category_order: targetStory.category_order }),
+        storyAPI.update(targetStory.id, { category_order: story.category_order })
+      ]);
+      
+      loadStories();
+    } catch (error) {
+      console.error("Error updating story order:", error);
+      alert("순서 변경 중 오류가 발생했습니다.");
+    }
+  };
+
   const categories = ["all", "A ZONE", "B ZONE", "C ZONE", "D ZONE"];
   const filteredStories = selectedCategory === "all" 
-    ? stories 
-    : stories.filter(s => s.category === selectedCategory);
+    ? stories.sort((a, b) => {
+        // 카테고리별로 먼저 정렬, 그 다음 카테고리 내 순서로 정렬
+        if (a.category !== b.category) {
+          return a.category.localeCompare(b.category);
+        }
+        return (a.category_order || 999) - (b.category_order || 999);
+      })
+    : stories
+        .filter(s => s.category === selectedCategory)
+        .sort((a, b) => (a.category_order || 999) - (b.category_order || 999));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -123,8 +158,11 @@ export default function AdminStoryPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     부제목
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     순서
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    순서 조정
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     관리
@@ -145,8 +183,32 @@ export default function AdminStoryPage() {
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {story.subtitle}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {story.order_index}
+                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                      <span className="bg-gray-100 px-2 py-1 rounded text-xs">
+                        {story.category_order || '-'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => moveStory(story, 'up')}
+                          className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                          title="위로 이동"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => moveStory(story, 'down')}
+                          className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                          title="아래로 이동"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       <button

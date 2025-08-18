@@ -8,7 +8,7 @@ export interface StoryItem {
   content: string[];
   image_url?: string;
   image_mask?: string;
-  order_index: number;
+  category_order: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -62,7 +62,7 @@ export const storyAPI = {
     const { data, error } = await supabase
       .from('stories')
       .select('*')
-      .order('order_index', { ascending: true });
+      .order('category_order', { ascending: true });
     
     if (error) {
       console.error('Error fetching stories:', error);
