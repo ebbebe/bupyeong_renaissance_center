@@ -18,7 +18,8 @@
       "mcp__supabase__apply_migration",
       "Bash(powershell:*)",
       "Bash(npm run dev:*)",
-      "mcp__supabase__execute_sql"
+      "mcp__supabase__execute_sql",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

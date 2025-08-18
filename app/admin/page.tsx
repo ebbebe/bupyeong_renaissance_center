@@ -177,24 +177,6 @@ export default function AdminPage() {
           ))}
         </div>
 
-        {/* Migration Alert */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <svg className="w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div className="flex-1">
-              <p className="text-sm text-blue-800 font-medium mb-1">데이터베이스 마이그레이션</p>
-              <p className="text-sm text-blue-700 mb-2">로컬 데이터를 Supabase로 이전할 수 있습니다.</p>
-              <button
-                onClick={() => router.push('/admin/migrate')}
-                className="text-sm font-medium text-blue-700 hover:text-blue-800 underline"
-              >
-                마이그레이션 페이지로 이동 →
-              </button>
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>
