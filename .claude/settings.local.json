@@ -19,7 +19,8 @@
       "Bash(powershell:*)",
       "Bash(npm run dev:*)",
       "mcp__supabase__execute_sql",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

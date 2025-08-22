@@ -144,7 +144,7 @@ export default function CategoryAccordion() {
           {/* Expanded content */}
           {expandedId === category.id && (
             <div className="bg-white/90 backdrop-blur-sm rounded-b-xl border-x-[2.67px] border-b-[2.67px] border-white shadow-lg overflow-hidden animate-slideDown">
-              <div className="p-6 space-y-3">
+              <div className="p-6 space-y-3 max-h-[400px] overflow-y-auto">
                 {category.subItems?.map((item, idx) => (
                   <Link
                     key={idx}
@@ -183,7 +183,7 @@ export default function CategoryAccordion() {
           }
           to {
             opacity: 1;
-            max-height: 300px;
+            max-height: 500px;
           }
         }
 

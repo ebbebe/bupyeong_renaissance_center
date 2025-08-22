@@ -22,8 +22,8 @@ export const validateImageFile = (file: File): { valid: boolean; error?: string 
   return { valid: true };
 };
 
-// 이미지를 public/uploads 폴더에 저장 (개발용)
-export const uploadImageToPublic = async (file: File, folder: string = 'general'): Promise<UploadResult> => {
+// 이미지를 Supabase Storage에 저장
+export const uploadImageToSupabase = async (file: File, folder: string = 'stories'): Promise<UploadResult> => {
   try {
     const validation = validateImageFile(file);
     if (!validation.valid) {
@@ -35,16 +35,15 @@ export const uploadImageToPublic = async (file: File, folder: string = 'general'
     const randomString = Math.random().toString(36).substring(2);
     const extension = file.name.split('.').pop();
     const fileName = `${timestamp}_${randomString}.${extension}`;
-    const relativePath = `/uploads/${folder}/${fileName}`;
+    const filePath = `${folder}/${fileName}`;
 
     // FormData 생성
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('folder', folder);
-    formData.append('fileName', fileName);
+    formData.append('filePath', filePath);
 
     // 업로드 API 호출
-    const response = await fetch('/api/upload', {
+    const response = await fetch('/api/upload/supabase', {
       method: 'POST',
       body: formData,
     });
@@ -61,6 +60,9 @@ export const uploadImageToPublic = async (file: File, folder: string = 'general'
     return { success: false, error: '업로드 중 오류가 발생했습니다.' };
   }
 };
+
+// 기존 함수는 레거시 지원용으로 유지
+export const uploadImageToPublic = uploadImageToSupabase;
 
 // Base64로 이미지 미리보기 생성
 export const createImagePreview = (file: File): Promise<string> => {
