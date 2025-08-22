@@ -114,7 +114,7 @@ export default function ImageUpload({
                 onError={(e) => {
                   console.error('Image load error:', e);
                   e.currentTarget.src = 'data:image/svg+xml,%3Csvg width="192" height="128" viewBox="0 0 192 128" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Crect width="192" height="128" fill="%23F3F4F6"/%3E%3Ctext x="96" y="64" text-anchor="middle" fill="%239CA4AF" font-family="Arial" font-size="14"%3E이미지 로드 실패%3C/text%3E%3C/svg%3E';
-                  e.currentTarget.onError = null; // 무한 루프 방지
+                  e.currentTarget.onerror = null; // 무한 루프 방지
                 }}
               />
               {uploading && (
