@@ -2,15 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import ServicePrepModal from "@/components/stamps/ServicePrepModal";
 
 export default function StampsPage() {
   const [activeTab, setActiveTab] = useState<"status" | "history">("status");
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     setTimeout(() => setIsLoaded(true), 100);
+    // 페이지 로드 시 모달을 표시
+    setTimeout(() => setShowModal(true), 300);
   }, []);
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    router.push('/main');
+  };
 
   const stampHistory = [
     { id: 1, date: "25.07.08", description: "D ZONE 완료 스탬프 지급" },
@@ -169,6 +178,12 @@ export default function StampsPage() {
           </div>
         </div>
       </div>
+
+      {/* Service Prep Modal */}
+      <ServicePrepModal 
+        isOpen={showModal} 
+        onClose={handleModalClose} 
+      />
     </div>
   );
 }

@@ -59,6 +59,14 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
     );
   }
 
+  const formatTitle = (title) => {
+    const replacements = {
+      '상인들에 의해 주도된 부평문화의 거리': '상인들에 의해 주도된\n부평문화의 거리',
+      '문화의 거리 공식채널 인스타그램': '부평문화의거리\n공식채널 인스타그램'
+    };
+    return replacements[title] || title;
+  };
+
   return (
     <div className="relative min-h-screen bg-[#fcfcfc] overflow-hidden">
       {/* Header */}
@@ -74,7 +82,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
               <path d="M12 2L2 12L12 22" stroke="#000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          <h1 className="text-[24px] font-bold text-black px-12 text-center">{story.title}</h1>
+          <h1 className="text-[24px] font-bold text-black px-12 text-center whitespace-pre-line">{formatTitle(story.title)}</h1>
         </div>
       </div>
 

@@ -39,9 +39,9 @@ export default function CategoryAccordion() {
         // 카테고리 색상 매핑
         const colorMap: Record<string, string> = {
           "A ZONE": "#FF9A00",
-          "B ZONE": "#16CB73", 
-          "C ZONE": "#16CB73",
-          "D ZONE": "#16CB73"
+          "B ZONE": "#9460A4", 
+          "C ZONE": "#96C346",
+          "D ZONE": "#87CDD8"
         };
 
         // 카테고리 제목 매핑
