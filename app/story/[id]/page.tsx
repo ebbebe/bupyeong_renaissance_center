@@ -59,8 +59,8 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
     );
   }
 
-  const formatTitle = (title) => {
-    const replacements = {
+  const formatTitle = (title: string) => {
+    const replacements: Record<string, string> = {
       '상인들에 의해 주도된 부평문화의 거리': '상인들에 의해 주도된\n부평문화의 거리',
       '문화의 거리 공식채널 인스타그램': '부평문화의거리\n공식채널 인스타그램'
     };
