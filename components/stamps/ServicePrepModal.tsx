@@ -12,7 +12,7 @@ export default function ServicePrepModal({ isOpen, onClose }: ServicePrepModalPr
     <div className="fixed inset-0 z-50 bg-[rgba(80,80,80,0.5)]">
       <div className="absolute inset-0 flex items-center justify-center px-6">
         <div className="bg-[#fcfcfc] w-[400px] h-[220px] rounded-lg flex flex-col items-center justify-center relative">
-          <h2 className="text-[20px] font-black text-black mb-[10px] text-center font-['Pretendard'] leading-[53px]">
+          <h2 className="text-[20px] font-black text-black mb-[10px] text-center font-['Pretendard'] leading-[53px]" style={{ fontWeight: 900, textShadow: '0.5px 0 0 currentColor' }}>
             서비스 준비중 입니다.
           </h2>
           
