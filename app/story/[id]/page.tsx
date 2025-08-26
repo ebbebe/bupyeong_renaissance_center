@@ -9,9 +9,16 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
   const [isLoaded, setIsLoaded] = useState(false);
   const [story, setStory] = useState<StoryItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isFromQR, setIsFromQR] = useState(false);
   const resolvedParams = use(params);
 
   useEffect(() => {
+    // QR 코드로 접속했는지 확인 (히스토리가 1개 이하이거나 referrer가 없으면 QR로 판단)
+    if (typeof window !== 'undefined') {
+      const fromQR = window.history.length <= 2 || !document.referrer || !document.referrer.includes(window.location.origin);
+      setIsFromQR(fromQR);
+    }
+
     const fetchStory = async () => {
       try {
         setLoading(true);
@@ -49,10 +56,10 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
         <div className="text-center">
           <p className="text-gray-600 mb-4">스토리를 찾을 수 없습니다.</p>
           <button
-            onClick={() => router.back()}
+            onClick={() => isFromQR ? router.push('/') : router.back()}
             className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
           >
-            돌아가기
+            {isFromQR ? '메인으로' : '돌아가기'}
           </button>
         </div>
       </div>
@@ -75,7 +82,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
       }`}>
         <div className="relative flex items-center justify-center h-24">
           <button
-            onClick={() => router.back()}
+            onClick={() => isFromQR ? router.push('/') : router.back()}
             className="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center hover:scale-110 transition-transform"
           >
             <svg width="14" height="24" viewBox="0 0 14 24" fill="none">
