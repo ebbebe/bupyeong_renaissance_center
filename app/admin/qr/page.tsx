@@ -51,32 +51,37 @@ export default function AdminQRPage() {
     }
   };
 
-  const generateQRCode = async (story: StoryItem) => {
-    setSelectedStory(story);
-    
-    // baseUrl이 없으면 현재 origin 사용
-    const url = baseUrl || window.location.origin;
-    const fullUrl = `${url}/story/${story.id}`;
-    setQrCodeUrl(fullUrl);
-
-    try {
-      if (canvasRef.current) {
-        // 동적 import를 사용하여 QRCode 라이브러리 로드
-        const QRCode = (await import('qrcode')).default;
-        
-        await QRCode.toCanvas(canvasRef.current, fullUrl, {
-          width: 256,
-          margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          }
-        });
-      }
-    } catch (error) {
-      console.error("Error generating QR code:", error);
-      alert("QR 코드 생성 중 오류가 발생했습니다.");
+  // selectedStory가 변경되면 QR 코드 생성
+  useEffect(() => {
+    if (selectedStory && canvasRef.current) {
+      const url = baseUrl || window.location.origin;
+      const fullUrl = `${url}/story/${selectedStory.id}`;
+      setQrCodeUrl(fullUrl);
+      
+      // QR 코드 생성
+      (async () => {
+        try {
+          const QRCode = (await import('qrcode')).default;
+          
+          await QRCode.toCanvas(canvasRef.current!, fullUrl, {
+            width: 256,
+            margin: 2,
+            color: {
+              dark: '#000000',
+              light: '#FFFFFF'
+            }
+          });
+        } catch (error) {
+          console.error("Error generating QR code:", error);
+          alert("QR 코드 생성 중 오류가 발생했습니다.");
+        }
+      })();
     }
+  }, [selectedStory, baseUrl]);
+
+  const generateQRCode = (story: StoryItem) => {
+    // 스토리 선택만 하면 useEffect에서 자동으로 QR 생성
+    setSelectedStory(story);
   };
 
   const downloadQRCode = () => {
