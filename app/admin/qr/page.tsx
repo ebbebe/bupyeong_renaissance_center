@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { storyAPI, type StoryItem } from "@/lib/supabase";
-import QRCode from 'qrcode';
 
 export default function AdminQRPage() {
   const router = useRouter();
@@ -61,6 +60,9 @@ export default function AdminQRPage() {
 
     try {
       if (canvasRef.current) {
+        // 동적 import를 사용하여 QRCode 라이브러리 로드
+        const QRCode = (await import('qrcode')).default;
+        
         await QRCode.toCanvas(canvasRef.current, fullUrl, {
           width: 256,
           margin: 2,
