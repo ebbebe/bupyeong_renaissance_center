@@ -54,8 +54,9 @@ export default function AdminQRPage() {
   const generateQRCode = async (story: StoryItem) => {
     setSelectedStory(story);
     
-    // UUID를 사용한 단순한 URL
-    const fullUrl = `${baseUrl}/story/${story.id}`;
+    // baseUrl이 없으면 현재 origin 사용
+    const url = baseUrl || window.location.origin;
+    const fullUrl = `${url}/story/${story.id}`;
     setQrCodeUrl(fullUrl);
 
     try {
