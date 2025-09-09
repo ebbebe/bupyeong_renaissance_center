@@ -11,7 +11,7 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
   const isNew = resolvedParams.id === "new";
   
   const [story, setStory] = useState<Partial<StoryItem>>({
-    category: "A ZONE",
+    category: "부평 상권변천사",
     title: "",
     subtitle: "",
     content: [""],
@@ -151,10 +151,10 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
               onChange={(e) => setStory({ ...story, category: e.target.value })}
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
             >
-              <option value="A ZONE">A ZONE - 부평소개</option>
-              <option value="B ZONE">B ZONE - 부평의 인물</option>
-              <option value="C ZONE">C ZONE - 행사와 축제</option>
-              <option value="D ZONE">D ZONE - 부평의 역사</option>
+              <option value="부평 상권변천사">부평 상권변천사</option>
+              <option value="평리단길/영화/음악/인물">평리단길/영화/음악/인물</option>
+              <option value="행사/축제/이벤트">행사/축제/이벤트</option>
+              <option value="상권홍보/SNS/기타">상권홍보/SNS/기타</option>
             </select>
           </div>
 

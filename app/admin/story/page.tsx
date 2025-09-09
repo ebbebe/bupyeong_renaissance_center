@@ -72,7 +72,7 @@ export default function AdminStoryPage() {
     }
   };
 
-  const categories = ["all", "A ZONE", "B ZONE", "C ZONE", "D ZONE"];
+  const categories = ["all", "부평 상권변천사", "평리단길/영화/음악/인물", "행사/축제/이벤트", "상권홍보/SNS/기타"];
   const filteredStories = selectedCategory === "all" 
     ? stories.sort((a, b) => {
         // 카테고리별로 먼저 정렬, 그 다음 카테고리 내 순서로 정렬

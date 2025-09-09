@@ -38,23 +38,22 @@ export default function CategoryAccordion() {
 
         // 카테고리 색상 매핑
         const colorMap: Record<string, string> = {
-          "A ZONE": "#FF9A00",
-          "B ZONE": "#9460A4", 
-          "C ZONE": "#96C346",
-          "D ZONE": "#87CDD8"
+          "부평 상권변천사": "#FF9A00",
+          "평리단길/영화/음악/인물": "#9460A4", 
+          "행사/축제/이벤트": "#96C346",
+          "상권홍보/SNS/기타": "#87CDD8"
         };
 
-        // 카테고리 제목 매핑
-        const categoryTitleMap: Record<string, string> = {
-          "A ZONE": "거리의 탄생",
-          "B ZONE": "부평의 인물", 
-          "C ZONE": "행사와 축제",
-          "D ZONE": "부평의 역사"
-        };
+        // 카테고리 순서 정의
+        const categoryOrder = [
+          "부평 상권변천사",
+          "평리단길/영화/음악/인물",
+          "행사/축제/이벤트",
+          "상권홍보/SNS/기타"
+        ];
 
         // CategoryItem 형태로 변환
-        const categoryItems: CategoryItem[] = Object.entries(groupedStories).map(([category, categoryStories]) => {
-          const zone = category.replace(" ZONE", "");
+        const categoryItems: CategoryItem[] = Object.entries(groupedStories).map(([category, categoryStories], index) => {
           
           // category_order로 정렬하여 UUID 사용
           const subItems = categoryStories
@@ -65,15 +64,22 @@ export default function CategoryAccordion() {
             }));
 
           return {
-            id: zone.toLowerCase(),
-            zone: zone,
+            id: `category-${index}`,
+            zone: category, // 카테고리명 자체를 zone으로 사용
             color: colorMap[category] || "#16CB73",
-            title: categoryTitleMap[category] || category,
+            title: category, // 카테고리명을 제목으로 사용
             subItems
           };
         });
 
-        setCategories(categoryItems.sort((a, b) => a.zone.localeCompare(b.zone)));
+        // 정의된 순서대로 정렬
+        const sortedCategories = categoryItems.sort((a, b) => {
+          const orderA = categoryOrder.indexOf(a.zone);
+          const orderB = categoryOrder.indexOf(b.zone);
+          return orderA - orderB;
+        });
+
+        setCategories(sortedCategories);
       } catch (error) {
         console.error("Error fetching stories:", error);
       } finally {
@@ -117,18 +123,12 @@ export default function CategoryAccordion() {
             }`}
           >
             <div className="absolute inset-0 flex items-center justify-between px-6">
-              {/* Zone label */}
+              {/* Category name */}
               <div className="flex items-center gap-4">
-                <span className="text-[30px] font-bold">
-                  <span style={{ color: category.color }}>{category.zone}</span>
-                  <span className="text-black"> ZONE</span>
+                <span className="text-[24px] font-bold" style={{ color: category.color }}>
+                  {category.zone}
                 </span>
               </div>
-
-              {/* Title */}
-              <span className="text-[24px] font-medium text-black">
-                {category.title}
-              </span>
 
               {/* Arrow icon */}
               <div className={`transition-transform duration-300 ${

@@ -22,9 +22,9 @@ export default function StampsPage() {
   };
 
   const stampHistory = [
-    { id: 1, date: "25.07.08", description: "D ZONE 완료 스탬프 지급" },
-    { id: 2, date: "25.07.07", description: "B ZONE 완료 스탬프 지급" },
-    { id: 3, date: "25.07.06", description: "A ZONE 역사보기 스탬프 지급" },
+    { id: 1, date: "25.07.08", description: "상권홍보/SNS/기타 완료 스탬프 지급" },
+    { id: 2, date: "25.07.07", description: "평리단길/영화/음악/인물 완료 스탬프 지급" },
+    { id: 3, date: "25.07.06", description: "부평 상권변천사 역사보기 스탬프 지급" },
     { id: 4, date: "25.07.01", description: "앱런 스탬프 지급" }
   ];
 
