@@ -4,6 +4,7 @@ import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { storyAPI, type StoryItem } from "@/lib/supabase";
 import ImageUpload from "@/components/admin/ImageUpload";
+import MultiImageUpload from "@/components/admin/MultiImageUpload";
 
 export default function AdminStoryEditPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
     subtitle: "",
     content: [""],
     image_url: "",
+    additional_images: [],
     category_order: 1
   });
   const [loading, setLoading] = useState(!isNew);
@@ -69,6 +71,7 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
           subtitle: story.subtitle,
           content: story.content || [""],
           image_url: story.image_url,
+          additional_images: story.additional_images || [],
           category_order: maxCategoryOrder + 1
         });
       } else {
@@ -222,12 +225,21 @@ export default function AdminStoryEditPage({ params }: { params: Promise<{ id: s
             </button>
           </div>
 
-          {/* 이미지 업로드 */}
+          {/* 대표 이미지 업로드 */}
           <ImageUpload
             currentImageUrl={story.image_url}
             onImageChange={(url) => setStory({ ...story, image_url: url })}
             folder="stories"
-            label="스토리 이미지"
+            label="대표 이미지"
+          />
+
+          {/* 추가 이미지 업로드 (부제목과 내용 사이) */}
+          <MultiImageUpload
+            currentImages={story.additional_images || []}
+            onImagesChange={(images) => setStory({ ...story, additional_images: images })}
+            folder="stories"
+            label="추가 이미지 (부제목과 내용 사이에 표시)"
+            maxImages={10}
           />
 
 

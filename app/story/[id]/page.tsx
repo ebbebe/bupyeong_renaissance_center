@@ -118,6 +118,43 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
           </p>
         </div>
 
+        {/* Additional Images Gallery */}
+        {story.additional_images && story.additional_images.length > 0 && (
+          <div className={`px-6 mb-8 transition-all duration-700 ${
+            isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`} style={{ transitionDelay: '500ms' }}>
+            <div className={`${
+              story.additional_images.length === 1 
+                ? 'flex justify-center' 
+                : story.additional_images.length === 2
+                  ? 'grid grid-cols-2 gap-3'
+                  : 'grid grid-cols-2 gap-3'
+            }`}>
+              {story.additional_images.map((imageUrl, index) => (
+                <div 
+                  key={index}
+                  className={`${
+                    story.additional_images!.length === 1 
+                      ? 'w-full max-w-md' 
+                      : ''
+                  } overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl`}
+                  style={{ 
+                    animation: `fadeInUp ${0.6 + index * 0.1}s ease-out`,
+                    animationFillMode: 'both'
+                  }}
+                >
+                  <img 
+                    src={imageUrl} 
+                    alt={`${story.title} 이미지 ${index + 1}`}
+                    className="w-full h-auto object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Content */}
         <div className="px-6 mb-12">
           {story.content.map((paragraph, index) => (
@@ -138,6 +175,20 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
         {/* Bottom spacing */}
         <div className="h-20"></div>
       </div>
+
+      {/* Animation styles for additional images */}
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }

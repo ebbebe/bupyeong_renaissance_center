@@ -8,6 +8,7 @@ export interface StoryItem {
   content: string[];
   image_url?: string;
   image_mask?: string;
+  additional_images?: string[];
   category_order: number;
   created_at?: string;
   updated_at?: string;
