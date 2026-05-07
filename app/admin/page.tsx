@@ -2,8 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-
-const ADMIN_KEY = "bupyeong2024"; // 실제 운영 시 환경변수로 이동
+import { ADMIN_KEY } from "@/lib/admin-auth";
 
 function AdminContent() {
   const router = useRouter();
@@ -131,8 +130,16 @@ function AdminContent() {
         </svg>
       )
     },
- 
-  
+    {
+      id: "audit-logs",
+      title: "변경 이력",
+      description: "추가/수정/삭제 기록",
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        </svg>
+      )
+    },
   ];
 
   return (
