@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+DB백업-2026-05-07
+
+# local AI/MCP config (contains secrets — never commit)
+.mcp.json
+.claude/settings.local.json
